@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оборонительный Корпус Эспада</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="auth-screen" class="terminal-screen">
+        <div class="auth-box">
+            <p class="status-msg">⚡ АРХИВ ЭСПАДЫ — ДОСТУП ПО КЛЮЧУ ⚡</p>
+            <p id="error-msg" class="error-text" style="display: none;">⛔ ОШИБКА АУТЕНТИФИКАЦИИ. ДОСТУП ЗАПРЕЩЁН.</p>
+            
+            <div class="input-group">
+                <label>ИДЕНТИФИКАТОР СОТРУДНИКА</label>
+                <input type="text" id="username" placeholder="ESPADA-OFFICER">
+            </div>
+
+            <div class="input-group">
+                <label>КЛЮЧ ДОСТУПА / ПАРОЛЬ</label>
+                <input type="password" id="password" placeholder="••••••••">
+            </div>
+
+            <button id="login-btn">⟫ ВОЙТИ / ЗАПРОС АРХИВА ⟪</button>
+        </div>
+    </div>
+
+    <div id="loading-screen" class="terminal-screen" style="display: none;">
+        <div class="loading-box">
+            <p>[ Управляемая Дисковая Операционная Система: инициализация ]</p>
+            <div class="progress-bar"><div class="progress-fill"></div></div>
+            <p class="percent">0%</p>
+        </div>
+    </div>
+
+    <div id="main-content" class="archive-container" style="display: none;">
+        
+        <div class="tabs-navigation">
+            <button class="tab-button active">
+                <span>📜 ИСТОРИЧЕСКИЙ КОНТЕКСТ</span>
+            </button>
+            <button class="tab-button locked" disabled>
+                <span>🏛️ ВОЕННЫЙ РЕГЛАМЕНТ [🔒]</span>
+            </button>
+            <button class="tab-button locked" disabled>
+                <span>🔒 СЕКРЕТНЫЕ ДАННЫЕ [🔒]</span>
+            </button>
+        </div>
+
+        <div class="archive-body">
+            <div class="tab-content">
+                <div class="doc-header">
+                    <span class="decor-line"></span>
+                    <h3>📜 ИСТОРИЧЕСКИЙ КОНТЕКСТ</h3>
+                </div>
+                
+                <div class="doc-block">
+                    <h4>Обᴏᴩᴏниᴛᴇᴧьный ᴋᴏᴩᴨуᴄ Эᴄᴨᴀдᴀ</h4>
+                    <p class="meta-date">Основан в 5 января 1997 года</p>
+                    
+                    <div class="doc-text">
+                        <p>Пᴏ иᴛᴏᴦᴀʍ уᴩᴇᴦуᴧиᴩᴏʙᴀния ɜᴀᴛяжнᴏᴦᴏ ᴨᴏᴧиᴛичᴇᴄᴋᴏᴦᴏ ᴋᴏнɸᴧиᴋᴛᴀ ʍᴇжду Униᴛᴇᴩᴩᴏй и Миᴋᴇᴧиᴇй, дᴀбы нᴀʙᴄᴇᴦдᴀ иᴄᴋᴧючиᴛь ᴄᴀʍу ʙᴏɜʍᴏжнᴏᴄᴛь ᴨᴏʙᴛᴏᴩнᴏй ϶ᴄᴋᴀᴧᴀции и ᴨᴩᴇдᴏᴛʙᴩᴀᴛиᴛь нᴏʙыᴇ ᴨᴏᴛᩩяᴄᴇния, быᴧ учᴩᴇждён Обᴏᴩᴏниᴛᴇᴧьный Кᴏᴩᴨуᴄ Эᴄᴨᴀдᴀ.</p>
+                        
+                        <p>Сия ᴏᴩᴦᴀниɜᴀция, иʍᴇющᴀя ᴄᴛᴀᴛуᴄ нᴇɜᴀʙиᴄиʍᴏй ʙᴏᴇннᴏй ᴄᴛᴩуᴋᴛуᴩы, ᴩᴀɜʍᴇᴄᴛиᴧᴀ ᴄʙᴏю ᴨᴏᴄᴛᴏянную ɯᴛᴀб-ᴋʙᴀᴩᴛиᴩу нᴀ ɜᴇʍᴧях, ᴨᴇᴩᴇдᴀнных ᴨᴏд Территорию Мᴇждунᴀᴩᴏднᴏᴦᴏ Кᴏнᴛᴩᴏᴧя. Гᴧᴀʙнᴏй цᴇᴧью Кᴏᴩᴨуᴄᴀ ᴨᴩᴏʙᴏɜᴦᴧᴀɯᴀᴇᴛᴄя ɜщиᴛᴀ ᴋᴏнᴛинᴇнᴛᴀ ᴏᴛ ᴧюбых ʙнᴇɯних и ʙнуᴛᴩᴇнних уᴦᴩᴏɜ, ᴨичёʍ ʙ ᴨᴇᴩʙᴏᴏчᴇᴩᴇднᴏʍ ᴨᴏᴩядᴋᴇ – ᴏбᴇᴄᴨᴇчᴇниᴇ бᴇɜᴏᴨᴀᴄнᴏᴄᴛи ᴄᴛᴩᴀн нᴏʙᴏᴏбᴩᴀɜᴏʙᴀннᴏᴦᴏ сᴏдᴩужᴇᴄᴛʙᴀ. В ᴏбяɜᴀннᴏᴄᴛи Эᴄᴨᴀдᴀ ᴛᴀᴋжᴇ ʙхᴏдиᴛ ʙыᴨᴏᴧнᴇниᴇ ᴏбщих бᴏᴇʙых ᴏбᴏᴩᴏниᴛᴇᴧьных ɜᴀдᴀч, ᴨᴏддᴇᴩжᴀниᴇ ʍиᴩᴀ и ᴨᴩᴇᴄᴇчᴇниᴇ ᴧюбых дᴇйᴄᴛʙий, ʙᴇдущих ᴋ нᴀᴩуɯᴇнию уᴄᴛᴀнᴏʙᴧᴇннᴏᴦᴏ ᴨᴏᴩядᴋᴀ.</p>
+                        
+                        <p class="highlight-box">
+                            Администрацией и исполнительными лицами организации является САЭ (Совет Администрации Эспады), а так-же Председатели Совета двух Лидеров (Айдзаэн Соскэ и Саймон Стилл)
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="archive-footer">
+            <button id="logout-btn">⨯ ВЫЙТИ ИЗ АРХИВА</button>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

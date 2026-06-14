@@ -1,0 +1,222 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #050505;
+    color: #d1c7bd;
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+}
+
+/* ЭКРАНЫ АВТОРИЗАЦИИ И ЗАГРУЗКИ */
+.terminal-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #050505;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    padding: 20px;
+}
+
+.auth-box, .loading-box {
+    max-width: 450px;
+    width: 100%;
+    border: 1px solid #221414;
+    background: #0a0606;
+    padding: 40px;
+    text-align: center;
+    box-shadow: 0 0 25px rgba(255, 0, 0, 0.05);
+}
+
+.status-msg {
+    color: #bd4f4f;
+    margin-bottom: 20px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.error-text {
+    color: #ff3333;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.input-group {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    font-size: 0.8rem;
+    color: #5c4c4c;
+    margin-bottom: 5px;
+    letter-spacing: 1px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px;
+    background: #0d0808;
+    border: 1px solid #2d1f1f;
+    color: #d1c7bd;
+    font-family: monospace;
+    font-size: 1rem;
+    outline: none;
+}
+
+.input-group input:focus {
+    border-color: #bd4f4f;
+}
+
+#login-btn {
+    width: 100%;
+    padding: 15px;
+    background: transparent;
+    border: 1px solid #bd4f4f;
+    color: #bd4f4f;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+#login-btn:hover {
+    background: #bd4f4f;
+    color: #050505;
+}
+
+/* Шкала загрузки */
+.progress-bar {
+    width: 100%;
+    height: 4px;
+    background: #221414;
+    margin: 20px 0 10px 0;
+}
+.progress-fill {
+    width: 0%;
+    height: 100%;
+    background: #bd4f4f;
+}
+
+/* ИНТЕРФЕЙС АРХИВА */
+.archive-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.tabs-navigation {
+    border-bottom: 1px solid #2d1f1f;
+    margin-bottom: 30px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.tab-button {
+    background: #0d0808;
+    border: 1px solid #2d1f1f;
+    border-bottom: none;
+    color: #8c7e73;
+    padding: 12px 20px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.2s;
+    text-align: left;
+}
+
+.tab-button.active {
+    background: #1a1010;
+    color: #e65c5c;
+    border-color: #542929;
+}
+
+.tab-button.locked {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.doc-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.decor-line {
+    width: 4px;
+    height: 28px;
+    background: #bd4f4f;
+    margin-right: 12px;
+    display: inline-block;
+}
+
+.doc-header h3 {
+    font-size: 1.6rem;
+    color: #e65c5c;
+    letter-spacing: 1px;
+}
+
+.doc-block h4 {
+    font-size: 1.3rem;
+    color: #e8e2db;
+    margin-bottom: 5px;
+    letter-spacing: 1px;
+}
+
+.meta-date {
+    font-size: 0.9rem;
+    color: #8c7e73;
+    margin-bottom: 25px;
+    font-family: monospace;
+}
+
+.doc-text p {
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+    text-align: justify;
+    color: #bbb0a6;
+}
+
+.highlight-box {
+    background: #0e0909;
+    border: 1px solid #231717;
+    padding: 20px;
+    margin-top: 30px;
+    color: #d1c7bd;
+}
+
+.archive-footer {
+    margin-top: auto;
+    padding: 40px 0 20px 0;
+    text-align: center;
+}
+
+#logout-btn {
+    background: transparent;
+    border: 1px solid #382424;
+    color: #8c7e73;
+    padding: 12px 30px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+#logout-btn:hover {
+    border-color: #ff3333;
+    color: #ff3333;
+    background: rgba(255, 51, 51, 0.05);
+}
