@@ -5,8 +5,8 @@
 }
 
 body {
-    background: #030812; /* Глубокий темно-синий цвет милитари-базы */
-    color: #c4d1e6; /* Приятный серебристо-голубой цвет текста */
+    background: #030812;
+    color: #c4d1e6;
     font-family: Arial, sans-serif;
     line-height: 1.6;
 }
@@ -83,7 +83,6 @@ body {
     font-family: monospace;
     font-size: 1rem;
     outline: none;
-    transition: 0.2s;
 }
 
 .input-group input:focus {
@@ -127,7 +126,7 @@ body {
     font-family: monospace;
 }
 
-/* ИНТЕРФЕЙС АРХИВА EDC */
+/* ИНТЕРФЕЙС АРХИВА */
 .archive-container {
     max-width: 850px;
     margin: 0 auto;
@@ -214,6 +213,17 @@ body {
     opacity: 0.8;
 }
 
+.clearance-badge {
+    background: #4a1515;
+    color: #ff4a4a;
+    border: 1px solid #822020;
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
 .meta-grid {
     background: #07162e;
     border-left: 3px solid #1a3a63;
@@ -221,12 +231,6 @@ body {
     margin-bottom: 30px;
     font-size: 0.9rem;
     color: #8fa7c7;
-}
-.meta-grid p {
-    margin-bottom: 4px;
-}
-.meta-grid p:last-child {
-    margin-bottom: 0;
 }
 
 .doc-text h5 {
@@ -277,7 +281,17 @@ body {
     margin: 30px 0;
 }
 
-/* Карта/блок Лидеров */
+.danger-box {
+    background: #1c1111;
+    border: 1px solid #4a2121;
+    border-left: 4px solid #ff3344;
+    padding: 20px;
+    margin: 30px 0;
+    color: #e6baba;
+    font-size: 1rem;
+}
+
+/* Блоки Лидеров */
 .leader-card {
     background: #06152b;
     border: 1px solid #132f54;
@@ -311,11 +325,76 @@ body {
     margin-bottom: 10px;
 }
 
-.leader-info p {
+/* ОКНО ОГРАНИЧЕНИЯ ДОСТУПА ВНУТРИ ВКЛАДОК */
+.tab-lock-container {
+    width: 100%;
+    padding: 60px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.lock-prompt-box {
+    max-width: 500px;
+    width: 100%;
+    background: #051124;
+    border: 1px solid #1e3a61;
+    padding: 35px;
+    text-align: center;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+}
+
+.lock-icon {
+    font-size: 2.5rem;
+    display: block;
+    margin-bottom: 15px;
+}
+
+.lock-prompt-box h5 {
+    color: #ff3344;
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+}
+
+.lock-prompt-box p {
     font-size: 0.95rem;
-    color: #a1b7d6;
-    margin-bottom: 0;
-    text-align: left;
+    color: #8fa7c7;
+    margin-bottom: 20px;
+}
+
+.inline-auth-form {
+    display: flex;
+    gap: 10px;
+}
+
+.inline-auth-form input {
+    flex: 1;
+    padding: 10px;
+    background: #020914;
+    border: 1px solid #1a3a63;
+    color: #fff;
+    font-family: monospace;
+    outline: none;
+}
+
+.inline-auth-form input:focus {
+    border-color: #00a2ff;
+}
+
+.inline-auth-form button {
+    background: #ff3344;
+    border: none;
+    color: #fff;
+    padding: 0 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.inline-auth-form button:hover {
+    background: #ff5566;
+    box-shadow: 0 0 10px rgba(255, 51, 68, 0.4);
 }
 
 /* Футер архива */
@@ -349,7 +428,10 @@ body {
         align-items: flex-start;
         gap: 10px;
     }
-    .doc-mini-logo {
-        max-width: 40px;
+    .inline-auth-form {
+        flex-direction: column;
+    }
+    .inline-auth-form button {
+        padding: 12px;
     }
 }
