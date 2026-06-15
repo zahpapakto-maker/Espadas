@@ -18,7 +18,7 @@
     box-sizing: border-box;
 }
 
-/* ЭФФЕКТ ЭЛТ МОНИТОРА (CRT) С КАНАЛАМИ И МЕРЦАНИЕМ */
+/* ЭФФЕКТ ЭЛТ МОНИТОРА (Глобальный) */
 .crt-overlay {
     position: fixed;
     top: 0;
@@ -32,11 +32,7 @@
     animation: crt-flicker 0.15s infinite;
 }
 
-@keyframes crt-flicker {
-    0% { opacity: 0.98; }
-    50% { opacity: 1; }
-    100% { opacity: 0.99; }
-}
+@keyframes crt-flicker { 0% { opacity: 0.98; } 50% { opacity: 1; } 100% { opacity: 0.99; } }
 
 /* МАТРИЧНЫЙ ХОЛСТ */
 #matrix-canvas {
@@ -47,7 +43,7 @@
     height: 100vh;
     z-index: -1;
     display: none;
-    opacity: 0.25; /* Прозрачность чтобы текст читался */
+    opacity: 0.25;
 }
 
 /* ГЛОБАЛЬНЫЕ СМЕНЫ ФОНОВ */
@@ -80,7 +76,256 @@ body {
     transition: background 0.3s ease;
 }
 
-/* ГЛИТЧ-ЭФФЕКТ ПРИ ОШИБКЕ ПАРОЛЯ */
+/* БИОМЕТРИЧЕСКИЙ СКАНЕР (Новый) */
+.biometric-scanner {
+    margin: 25px 0;
+    border: 1px solid #1a3a63;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+.scan-frame {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 10px auto;
+    border: 1px solid rgba(0, 162, 255, 0.3);
+    overflow: hidden;
+    background: radial-gradient(circle, #051124 10%, #000 100%);
+}
+
+.laser-line {
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background: #00a2ff;
+    box-shadow: 0 0 10px #00a2ff;
+    top: 0;
+    animation: laser-scan 1.5s ease-in-out infinite;
+}
+
+.eye-graphic {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60px;
+    height: 30px;
+    border: 3px solid rgba(0, 162, 255, 0.2);
+    border-radius: 50%;
+}
+
+.eye-graphic::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(0, 162, 255, 0.2);
+    border-radius: 50%;
+    background: rgba(0, 162, 255, 0.05);
+}
+
+.scan-msg {
+    color: #00a2ff;
+    font-size: 0.8rem;
+    font-weight: bold;
+    animation: text-flash 0.5s infinite;
+}
+
+@keyframes laser-scan {
+    0% { top: -2%; }
+    50% { top: 100%; }
+    100% { top: -2%; }
+}
+
+/* ОКНО ЭКСПОРТА (CENSORED DOCS) (Новый) */
+.redacted-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 100000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.redacted-paper {
+    position: relative;
+    max-width: 650px;
+    width: 100%;
+    max-height: 90vh;
+    background: #101010;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #a0a0a0;
+    padding: 60px 50px;
+    font-family: Courier, monospace;
+    font-size: 1rem;
+    overflow-y: auto;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.7);
+}
+
+/* "Штампы" цензуры */
+.stamp {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    border: 4px solid #ff3344;
+    color: #ff3344;
+    padding: 5px 15px;
+    font-weight: bold;
+    transform: rotate(15deg);
+    font-size: 1.2rem;
+    background: transparent;
+    text-shadow: none;
+}
+
+.stamp-round {
+    position: absolute;
+    bottom: 50px;
+    left: 40px;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    transform: rotate(-10deg);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+}
+
+#close-export {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #8fa7c7;
+    cursor: pointer;
+    font-size: 0.8rem;
+    padding: 4px 10px;
+}
+
+#close-export:hover {
+    border-color: #ff3344;
+    color: #ff3344;
+}
+
+/* Сама цензура (Черные плашки) */
+.censored-block {
+    background: #000;
+    color: transparent !important;
+    transition: all 0.2s;
+    text-shadow: none;
+    cursor: pointer;
+}
+
+.censored-block::selection {
+    background: transparent;
+}
+
+/* Кнопки экспорта */
+.export-btn {
+    display: inline-block;
+    background: transparent;
+    border: 1px solid var(--current-color);
+    color: var(--current-color);
+    padding: 6px 15px;
+    cursor: pointer;
+    margin-top: 20px;
+    font-weight: bold;
+    transition: 0.2s;
+    font-size: 0.85rem;
+}
+
+.export-btn:hover {
+    background: var(--current-color);
+    color: #000;
+    box-shadow: 0 0 10px var(--current-color);
+}
+
+/* ТАКТИЧЕСКИЙ РАДАР (SVG) (Новый) */
+.radar-block {
+    background: transparent !important;
+    border: 1px solid var(--border-green) !important;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.radar-block h5 {
+    color: var(--primary-green) !important;
+    margin-bottom: 10px !important;
+    font-size: 0.9rem !important;
+}
+
+#radar-container {
+    max-width: 250px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.tactical-radar {
+    fill: none;
+    stroke: var(--primary-green);
+    stroke-width: 0.5;
+    opacity: 0.6;
+}
+
+.radar-bg {
+    fill: #010603;
+    stroke: none;
+}
+
+.radar-grid {
+    stroke-dasharray: 2 2;
+    opacity: 0.4;
+}
+
+.radar-line-x, .radar-line-y {
+    opacity: 0.4;
+}
+
+.radar-sweep {
+    fill: rgba(0, 255, 102, 0.03);
+    stroke: none;
+    transform-origin: 50px 50px;
+    animation: radar-sweep-rotate 3s linear infinite;
+}
+
+.tactical-blip {
+    fill: var(--primary-green);
+    stroke: none;
+    animation: blip-pulse 1.5s ease infinite;
+    opacity: 0;
+}
+
+.blip-1 { animation-delay: 0.2s; }
+.blip-2 { animation-delay: 0.8s; }
+.blip-3 { animation-delay: 1.2s; }
+
+@keyframes radar-sweep-rotate {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes blip-pulse {
+    0% { opacity: 0; transform: scale(1); radial-gradient(circle, var(--primary-green) 0%, rgba(0,0,0,0) 100%); }
+    20% { opacity: 1; transform: scale(1.1); radial-gradient(circle, var(--primary-green) 50%, rgba(0,0,0,0) 100%); }
+    60% { opacity: 0; transform: scale(1.3); radial-gradient(circle, var(--primary-green) 10%, rgba(0,0,0,0) 100%); }
+    100% { opacity: 0; }
+}
+
+/* ГЛИТЧ ПРИ ОШИБКЕ ПАРОЛЯ */
 .glitch-error {
     animation: glitch-shake 0.4s linear;
     border-color: var(--primary-red) !important;
@@ -100,55 +345,18 @@ body {
     100% { transform: translate(0, 0) skewX(0deg); filter: hue-rotate(360deg); }
 }
 
-/* АВАРИЙНЫЙ ЭКРАН УНИЧТОЖЕНИЯ (LOCKDOWN) */
-.lockdown-bg {
-    background: #050001 !important;
-    border: 4px solid #ff3344;
-    z-index: 100000 !important;
+/* АНИМАЦИЯ ПОЯВЛЕНИЯ ТЕКСТА */
+.animated-content {
+    animation: fadeInSlide 0.4s ease-out forwards !important;
+    opacity: 0;
 }
 
-.lockdown-box {
-    max-width: 600px;
-    padding: 40px;
-    background: #120204;
-    border: 2px solid #ff3344;
-    text-align: center;
-    box-shadow: 0 0 50px rgba(255, 51, 68, 0.3);
-    animation: pulse-red-border 2s infinite;
+@keyframes fadeInSlide {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-.alarm-text {
-    color: #ff3344;
-    font-size: 1.6rem;
-    margin-bottom: 20px;
-    letter-spacing: 2px;
-    text-shadow: 0 0 10px #ff3344;
-    animation: text-flash 1s infinite;
-}
-
-.lockdown-desc { color: #ff9999; margin-bottom: 10px; font-size: 1.1rem; }
-.lockdown-warn { color: #804045; margin-bottom: 30px; font-size: 0.95rem; font-style: italic; }
-
-.countdown-timer {
-    font-family: monospace;
-    font-size: 4.5rem;
-    color: #ff3344;
-    font-weight: bold;
-    text-shadow: 0 0 20px #ff3344;
-}
-
-@keyframes pulse-red-border {
-    0% { box-shadow: 0 0 20px rgba(255, 51, 68, 0.2); }
-    50% { box-shadow: 0 0 50px rgba(255, 51, 68, 0.5); }
-    100% { box-shadow: 0 0 20px rgba(255, 51, 68, 0.2); }
-}
-
-@keyframes text-flash {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
-}
-
-/* ТЕРМИНАЛЬНЫЕ ЭКРАНЫ */
+/* ЭКРАНЫ */
 .terminal-screen {
     position: fixed;
     top: 0;
@@ -258,6 +466,25 @@ body {
     flex-direction: column;
 }
 
+/* Приветствие пользователя */
+#welcome-bar {
+    text-align: right;
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgba(0, 162, 255, 0.1);
+    padding-bottom: 5px;
+}
+
+#welcome-bar h6 {
+    color: var(--current-color);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+}
+
+#welcome-username {
+    font-weight: bold;
+    text-shadow: 0 0 5px var(--current-color);
+}
+
 .tabs-navigation {
     border-bottom: 1px solid var(--current-border);
     margin-bottom: 35px;
@@ -282,7 +509,6 @@ body {
     background: var(--current-card) !important;
     color: var(--current-color) !important;
     border-color: var(--current-color) !important;
-    text-shadow: 0 0 5px var(--current-color);
 }
 
 .doc-header {
@@ -296,21 +522,17 @@ body {
     height: 26px;
     background: var(--current-color);
     margin-right: 12px;
-    display: inline-block;
-    box-shadow: 0 0 10px var(--current-color);
 }
 
 .doc-header h3 {
     font-size: 1.4rem;
     color: var(--current-color);
-    letter-spacing: 1px;
 }
 
 .doc-title-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 20px;
     border-bottom: 1px solid var(--current-border);
     padding-bottom: 15px;
     margin-bottom: 15px;
@@ -323,8 +545,6 @@ body {
 
 .doc-mini-logo {
     max-width: 50px;
-    height: auto;
-    opacity: 0.8;
 }
 
 .clearance-badge {
@@ -348,20 +568,13 @@ body {
     font-size: 1.1rem;
     color: var(--current-color);
     margin: 35px 0 15px 0;
-    letter-spacing: 1px;
+    text-transform: uppercase;
 }
 
 .doc-text p {
     font-size: 1.05rem;
     margin-bottom: 20px;
-    text-align: justify;
     color: #b0c2de;
-}
-
-.styled-list {
-    list-style: none;
-    margin-bottom: 25px;
-    padding-left: 5px;
 }
 
 .styled-list li {
@@ -377,18 +590,7 @@ body {
     position: absolute;
     left: 0;
     color: var(--current-color);
-    font-size: 0.8rem;
     top: 2px;
-}
-
-.italic-note {
-    font-style: italic;
-    border-top: 1px solid var(--current-border);
-    border-bottom: 1px solid var(--current-border);
-    padding: 15px 0;
-    color: #8fa7c7 !important;
-    text-align: center !important;
-    margin: 30px 0;
 }
 
 .danger-box {
@@ -409,78 +611,19 @@ body {
     gap: 20px;
 }
 
-.leader-num {
-    font-family: monospace;
-    font-size: 1.8rem;
-    color: #1a4a82;
-    font-weight: bold;
-}
-
-.leader-info h6 {
-    font-size: 1.15rem;
-    color: #ffffff;
-}
-
-.leader-rank {
-    display: inline-block;
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    color: var(--current-color);
-    font-weight: bold;
-    margin-bottom: 10px;
-}
-
 .tab-lock-container {
     width: 100%;
     padding: 60px 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }
 
 .lock-prompt-box {
     max-width: 500px;
     width: 100%;
+    margin: 0 auto;
     background: #051124;
     border: 1px solid #1e3a61;
     padding: 35px;
     text-align: center;
-}
-
-.lock-icon {
-    font-size: 2.5rem;
-    display: block;
-    margin-bottom: 15px;
-}
-
-.lock-prompt-box h5 {
-    color: var(--primary-red);
-    font-size: 1.1rem;
-    margin-bottom: 10px;
-}
-
-.inline-auth-form {
-    display: flex;
-    gap: 10px;
-}
-
-.inline-auth-form input {
-    flex: 1;
-    padding: 10px;
-    background: #020914;
-    border: 1px solid #1a3a63;
-    color: #fff;
-    font-family: monospace;
-    outline: none;
-}
-
-.inline-auth-form button {
-    background: var(--primary-red);
-    border: none;
-    color: #fff;
-    padding: 0 20px;
-    font-weight: bold;
-    cursor: pointer;
 }
 
 .archive-footer {
@@ -494,8 +637,6 @@ body {
     border: 1px solid #16355c;
     color: #5c7fa3;
     padding: 12px 35px;
-    font-weight: bold;
-    cursor: pointer;
 }
 
 #logout-btn:hover {
@@ -503,6 +644,10 @@ body {
     color: var(--primary-red);
 }
 
-@media (max-width: 600px) {
-    .inline-auth-form { flex-direction: column; }
+@keyframes laser-scan {
+    0% { top: 10px; opacity: 0.8; }
+    50% { top: 90px; opacity: 1; }
+    100% { top: 10px; opacity: 0.8; }
 }
+
+@keyframes text-flash { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
