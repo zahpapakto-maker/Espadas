@@ -421,7 +421,11 @@ body {
     transition: all 0.3s ease;
 }
 
-.terminal-logo { max-width: 140px; height: auto; margin-bottom: 25px; }
+.terminal-logo { 
+    max-width: 100px; /* Попробуй 80px, 100px или другое значение, которое тебе нравится */
+    height: auto; 
+    margin-bottom: 25px; 
+}
 .status-msg { color: var(--primary-blue); margin-bottom: 25px; font-weight: bold; letter-spacing: 1px; }
 .error-text { color: var(--primary-red); font-size: 0.9rem; margin-bottom: 20px; font-weight: bold; }
 .input-group { text-align: left; margin-bottom: 20px; }
