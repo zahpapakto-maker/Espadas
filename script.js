@@ -2,7 +2,7 @@ const GENERAL_PASSWORD = "ESPADA1997";
 const BERSERK_PASSWORD = "ESPADA1488"; 
 
 let isLevel2Unlocked = false; 
-let targetTabAfterUnlock = ""; // Храним имя вкладки, которую юзер хотел открыть
+let currentSelectedTab = "history"; // Фиксируем, куда именно кликнул пользователь
 
 // Элементы
 const loginBtn = document.getElementById('login-btn');
@@ -27,7 +27,7 @@ const level2Error = document.getElementById('level2-error');
 
 function triggerAnimation(element) {
     element.classList.remove('animated-content');
-    void element.offsetWidth; // Хак сброса анимации
+    void element.offsetWidth; 
     element.classList.add('animated-content');
 }
 
@@ -54,30 +54,33 @@ function startLoadingAnimation() {
             clearInterval(interval);
             loadingScreen.style.display = 'none';
             mainContent.style.display = 'flex';
-            showTab("history"); 
+            renderActiveTab("history"); 
         } else {
             progress += Math.floor(Math.random() * 15) + 5;
             if (progress > 100) progress = 100;
             progressFill.style.width = progress + '%';
             percentText.innerText = progress + '%';
         }
-    }, 60);
+    }, 50);
 }
 
-// Управление вкладками и динамической темой
-function showTab(tabName) {
+// Прямая и чистая функция отрисовки интерфейса без рекурсий
+function renderActiveTab(tabName) {
+    // 1. Сбрасываем активные классы со всех кнопок
     btnTabHistory.classList.remove('active');
     btnTabReglement.classList.remove('active');
     btnTabOperations.classList.remove('active');
     
+    // 2. Скрываем вообще все контентные блоки
     contentHistory.style.display = 'none';
     contentReglement.style.display = 'none';
     contentOperations.style.display = 'none';
     tabLockScreen.style.display = 'none';
-
-    // Сбрасываем классы темы с тега body
+    
+    // 3. Полностью очищаем тему с body
     document.body.classList.remove('theme-blue', 'theme-red', 'theme-green');
 
+    // 4. Отрисовка конкретной вкладки
     if (tabName === "history") {
         btnTabHistory.classList.add('active');
         document.body.classList.add('theme-blue');
@@ -91,8 +94,7 @@ function showTab(tabName) {
             contentReglement.style.display = 'block';
             triggerAnimation(contentReglement);
         } else {
-            targetTabAfterUnlock = "reglement";
-            document.body.classList.add('theme-blue'); // Окно ввода остается в синем стиле
+            document.body.classList.add('theme-blue');
             tabLockScreen.style.display = 'flex';
             triggerAnimation(tabLockScreen);
         }
@@ -104,7 +106,6 @@ function showTab(tabName) {
             contentOperations.style.display = 'block';
             triggerAnimation(contentOperations);
         } else {
-            targetTabAfterUnlock = "operations";
             document.body.classList.add('theme-blue');
             tabLockScreen.style.display = 'flex';
             triggerAnimation(tabLockScreen);
@@ -112,39 +113,39 @@ function showTab(tabName) {
     }
 }
 
-// Проверка 2 Уровня доступа
+// Клик по вкладкам просто меняет внутренний статус и вызывает отрисовку
+btnTabHistory.addEventListener('click', () => { currentSelectedTab = "history"; renderActiveTab("history"); });
+btnTabReglement.addEventListener('click', () => { currentSelectedTab = "reglement"; renderActiveTab("reglement"); });
+btnTabOperations.addEventListener('click', () => { currentSelectedTab = "operations"; renderActiveTab("operations"); });
+
+// Проверка пароля Уровня 2
 function checkLevel2Password() {
     if (level2Password.value === BERSERK_PASSWORD) {
         isLevel2Unlocked = true;
         level2Error.style.display = 'none';
-        tabLockScreen.style.display = 'none';
+        level2Password.value = '';
         
-        // Открываем ту вкладку, на которую юзер изначально шел
-        showTab(targetTabAfterUnlock);
+        // Пароль верный — рендерим ту вкладку, на которой юзер споткнулся
+        renderActiveTab(currentSelectedTab);
     } else {
         level2Error.style.display = 'block';
         level2Password.value = '';
     }
 }
 
-// Слушатели событий
-btnTabHistory.addEventListener('click', () => showTab("history"));
-btnTabReglement.addEventListener('click', () => showTab("reglement"));
-btnTabOperations.addEventListener('click', () => showTab("operations"));
-
 level2Btn.addEventListener('click', checkLevel2Password);
 level2Password.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') checkLevel2Password();
 });
 
-// Полный выход
+// Кнопка выхода
 document.getElementById('logout-btn').addEventListener('click', () => {
     mainContent.style.display = 'none';
     authScreen.style.display = 'flex';
     passwordInput.value = '';
     level2Password.value = '';
     isLevel2Unlocked = false;
-    targetTabAfterUnlock = "";
+    currentSelectedTab = "history";
     document.body.classList.remove('theme-red', 'theme-green');
     document.body.classList.add('theme-blue');
 });

@@ -2,12 +2,14 @@
     --primary-blue: #00a2ff;
     --border-blue: #1a3a63;
     --bg-card-blue: #051124;
-    --text-blue: #b0c2de;
     
     --primary-red: #ff3344;
     --border-red: #4a1515;
-    --bg-card-red: #1a080a;
-    --text-red: #e6baba;
+    --bg-card-red: #160709;
+    
+    --primary-green: #00ff66;
+    --border-green: #0f3d1e;
+    --bg-card-green: #05140b;
 }
 
 * {
@@ -16,24 +18,46 @@
     box-sizing: border-box;
 }
 
+/* ГЛОБАЛЬНЫЕ СМЕНЫ ФОНОВ С УСИЛЕНИЕМ ПРИОРИТЕТА */
+body.theme-blue {
+    background: #030812 !important;
+    --current-color: var(--primary-blue);
+    --current-border: var(--border-blue);
+    --current-card: var(--bg-card-blue);
+}
+
+body.theme-red {
+    background: #0d0203 !important;
+    --current-color: var(--primary-red);
+    --current-border: var(--border-red);
+    --current-card: var(--bg-card-red);
+}
+
+body.theme-green {
+    background: #020804 !important;
+    --current-color: var(--primary-green);
+    --current-border: var(--border-green);
+    --current-card: var(--bg-card-green);
+}
+
 body {
-    background: #030812;
     color: #c4d1e6;
     font-family: Arial, sans-serif;
     line-height: 1.6;
     overflow-x: hidden;
+    transition: background 0.3s ease;
 }
 
 /* АНИМАЦИЯ ПОЯВЛЕНИЯ ТЕКСТА */
 .animated-content {
-    animation: fadeInSlide 0.6s ease forwards;
+    animation: fadeInSlide 0.4s ease-out forwards !important;
     opacity: 0;
 }
 
 @keyframes fadeInSlide {
     from {
         opacity: 0;
-        transform: translateY(15px);
+        transform: translateY(8px);
     }
     to {
         opacity: 1;
@@ -70,7 +94,6 @@ body {
     max-width: 140px;
     height: auto;
     margin-bottom: 25px;
-    filter: drop-shadow(0 0 10px rgba(0, 162, 255, 0.3));
 }
 
 .status-msg {
@@ -78,8 +101,6 @@ body {
     margin-bottom: 25px;
     font-weight: bold;
     letter-spacing: 1px;
-    font-size: 0.95rem;
-    text-shadow: 0 0 8px rgba(0, 162, 255, 0.4);
 }
 
 .error-text {
@@ -87,7 +108,6 @@ body {
     font-size: 0.9rem;
     margin-bottom: 20px;
     font-weight: bold;
-    text-shadow: 0 0 5px rgba(255, 51, 68, 0.3);
 }
 
 .input-group {
@@ -100,7 +120,6 @@ body {
     font-size: 0.75rem;
     color: #4f7396;
     margin-bottom: 6px;
-    letter-spacing: 1px;
     font-weight: bold;
 }
 
@@ -111,13 +130,7 @@ body {
     border: 1px solid var(--border-blue);
     color: #e0e9f5;
     font-family: monospace;
-    font-size: 1rem;
     outline: none;
-}
-
-.input-group input:focus {
-    border-color: var(--primary-blue);
-    box-shadow: 0 0 10px rgba(0, 162, 255, 0.2);
 }
 
 #login-btn {
@@ -128,14 +141,11 @@ body {
     color: var(--primary-blue);
     font-weight: bold;
     cursor: pointer;
-    transition: 0.3s;
-    letter-spacing: 1px;
 }
 
 #login-btn:hover {
     background: var(--primary-blue);
     color: #030812;
-    box-shadow: 0 0 15px rgba(0, 162, 255, 0.4);
 }
 
 .progress-bar {
@@ -148,55 +158,13 @@ body {
     width: 0%;
     height: 100%;
     background: var(--primary-blue);
-    box-shadow: 0 0 8px rgba(0, 162, 255, 0.6);
 }
 .percent {
     color: var(--primary-blue);
     font-family: monospace;
 }
 
-/* ДИНАМИЧЕСКИЕ ТЕМЫ ДЛЯ ИНТЕРФЕЙСА */
-
-/* --- 1. СИНЯЯ ТЕМА (ОБЩАЯ) --- */
-.archive-container.theme-blue {
-    transition: all 0.5s ease;
-}
-.theme-blue .tab-button.active {
-    background: #0d2240;
-    color: var(--primary-blue);
-    border-color: #24558f;
-}
-.theme-blue .decor-line {
-    background: var(--primary-blue);
-    box-shadow: 0 0 8px rgba(0, 162, 255, 0.6);
-}
-.theme-blue .doc-header h3 { color: var(--primary-blue); }
-.theme-blue .doc-text h5 { color: var(--primary-blue); }
-.theme-blue .styled-list li::before { color: var(--primary-blue); }
-.theme-blue .leader-rank { color: var(--primary-blue); }
-.theme-blue .leader-card { background: #06152b; border-color: #132f54; }
-
-/* --- 2. БАГРОВАЯ ТЕМА (БЕРСЕРК) --- */
-.archive-container.theme-red {
-    transition: all 0.8s ease; /* Плавное перетекание цвета */
-}
-.theme-red .tab-button.active {
-    background: #380b10;
-    color: var(--primary-red);
-    border-color: #822020;
-}
-.theme-red .decor-line {
-    background: var(--primary-red);
-    box-shadow: 0 0 12px rgba(255, 51, 68, 0.8);
-}
-.theme-red .doc-header h3 { color: var(--primary-red); }
-.theme-red .doc-text h5 { color: var(--primary-red); }
-.theme-red .styled-list li::before { color: var(--primary-red); }
-.theme-red .meta-grid { background: #1f0709; border-left-color: var(--primary-red); }
-.theme-red .doc-text p { color: var(--text-red); }
-.theme-red .styled-list li { color: var(--text-red); }
-
-/* БАЗОВЫЕ ЭЛЕМЕНТЫ АРХИВА */
+/* ИНТЕРФЕЙС АРХИВА */
 .archive-container {
     max-width: 850px;
     margin: 0 auto;
@@ -207,7 +175,7 @@ body {
 }
 
 .tabs-navigation {
-    border-bottom: 1px solid #1a3a63;
+    border-bottom: 1px solid var(--current-border);
     margin-bottom: 35px;
     display: flex;
     flex-wrap: wrap;
@@ -216,19 +184,21 @@ body {
 
 .tab-button {
     background: #051124;
-    border: 1px solid #1a3a63;
+    border: 1px solid var(--border-blue);
     border-bottom: none;
     color: #5c7fa3;
     padding: 14px 24px;
     font-size: 0.85rem;
     cursor: pointer;
     font-weight: bold;
-    transition: 0.2s;
+    transition: all 0.2s ease;
 }
 
-.tab-button.locked {
-    opacity: 0.25;
-    cursor: not-allowed;
+.tab-button.active {
+    background: var(--current-card) !important;
+    color: var(--current-color) !important;
+    border-color: var(--current-color) !important;
+    text-shadow: 0 0 5px var(--current-color);
 }
 
 .doc-header {
@@ -240,11 +210,15 @@ body {
 .decor-line {
     width: 4px;
     height: 26px;
+    background: var(--current-color);
+    margin-right: 12px;
     display: inline-block;
+    box-shadow: 0 0 10px var(--current-color);
 }
 
 .doc-header h3 {
     font-size: 1.4rem;
+    color: var(--current-color);
     letter-spacing: 1px;
 }
 
@@ -253,7 +227,7 @@ body {
     justify-content: space-between;
     align-items: center;
     gap: 20px;
-    border-bottom: 1px solid #1a3a63;
+    border-bottom: 1px solid var(--current-border);
     padding-bottom: 15px;
     margin-bottom: 15px;
 }
@@ -276,19 +250,19 @@ body {
     padding: 4px 10px;
     font-size: 0.75rem;
     font-weight: bold;
-    letter-spacing: 1px;
 }
 
 .meta-grid {
+    background: var(--current-card);
+    border-left: 3px solid var(--current-color);
     padding: 12px 20px;
     margin-bottom: 30px;
     font-size: 0.9rem;
-    background: #07162e;
-    border-left: 3px solid #1a3a63;
 }
 
 .doc-text h5 {
     font-size: 1.1rem;
+    color: var(--current-color);
     margin: 35px 0 15px 0;
     letter-spacing: 1px;
 }
@@ -297,7 +271,7 @@ body {
     font-size: 1.05rem;
     margin-bottom: 20px;
     text-align: justify;
-    color: var(--text-blue);
+    color: #b0c2de;
 }
 
 .styled-list {
@@ -311,21 +285,22 @@ body {
     padding-left: 20px;
     margin-bottom: 12px;
     font-size: 1.05rem;
-    color: var(--text-blue);
+    color: #b0c2de;
 }
 
 .styled-list li::before {
     content: "■";
     position: absolute;
     left: 0;
+    color: var(--current-color);
     font-size: 0.8rem;
     top: 2px;
 }
 
 .italic-note {
     font-style: italic;
-    border-top: 1px solid #132b4a;
-    border-bottom: 1px solid #132b4a;
+    border-top: 1px solid var(--current-border);
+    border-bottom: 1px solid var(--current-border);
     padding: 15px 0;
     color: #8fa7c7 !important;
     text-align: center !important;
@@ -341,8 +316,9 @@ body {
     color: #e6baba;
 }
 
-/* Лидеры */
 .leader-card {
+    background: var(--current-card);
+    border: 1px solid var(--current-border);
     padding: 20px;
     margin-bottom: 15px;
     display: flex;
@@ -365,12 +341,12 @@ body {
     display: inline-block;
     font-size: 0.8rem;
     text-transform: uppercase;
+    color: var(--current-color);
     font-weight: bold;
-    letter-spacing: 1px;
     margin-bottom: 10px;
 }
 
-/* ФОРМА БЛОКИРОВКИ (ВНУТРИ ВКЛАДКИ) */
+/* ФОРМА АВТОРИЗАЦИИ ВНУТРИ ВКЛАДОК */
 .tab-lock-container {
     width: 100%;
     padding: 60px 20px;
@@ -435,8 +411,8 @@ body {
     border: 1px solid #16355c;
     color: #5c7fa3;
     padding: 12px 35px;
-    cursor: pointer;
     font-weight: bold;
+    cursor: pointer;
 }
 
 #logout-btn:hover {
