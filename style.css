@@ -422,8 +422,8 @@ body {
 }
 
 #content-history .terminal-logo {
-    max-width: 80px;
-    width: 80px; /* Жестко фиксируем ширину */
+    max-width: 20px;
+    width: 20px; /* Жестко фиксируем ширину */
     display: block;
     margin: 0 auto 20px auto;
 }
