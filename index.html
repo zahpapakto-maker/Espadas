@@ -8,21 +8,9 @@
 </head>
 <body class="theme-blue">
 
-    <div class="crt-overlay"></div>
-
-    <canvas id="matrix-canvas"></canvas>
-
-    <div id="lockdown-screen" class="terminal-screen lockdown-bg" style="display: none;">
-        <div class="lockdown-box">
-            <h1 class="alarm-text">🚨 ТРЕВОГА: РЕЖИМ САМОУНИЧТОЖЕНИЯ 🚨</h1>
-            <p class="lockdown-desc">Зафиксирована множественная попытка несанкционированного подбора ключей доступа.</p>
-            <p class="lockdown-warn">Локальные секторы архива EDC изолированы. Доступ полностью заблокирован.</p>
-            <div class="countdown-timer" id="lockdown-timer">05:00</div>
-        </div>
-    </div>
-
+    <!-- Экран авторизации 1 уровня -->
     <div id="auth-screen" class="terminal-screen">
-        <div class="auth-box" id="auth-box-l1">
+        <div class="auth-box">
             <img src="logo.png" alt="EDC Logo" class="terminal-logo">
             <p class="status-msg">⚡ АРХИВ EDC ESPADA — ДОСТУП ПО КЛЮЧУ ⚡</p>
             <p id="error-msg" class="error-text" style="display: none;">⛔ ОШИБКА АУТЕНТИФИКАЦИИ. ДОСТУП ЗАПРЕЩЁН.</p>
@@ -41,6 +29,7 @@
         </div>
     </div>
 
+    <!-- Экран загрузки -->
     <div id="loading-screen" class="terminal-screen" style="display: none;">
         <div class="loading-box">
             <p>[ Управляемая Дисковая Операционная Система: инициализация секторов ]</p>
@@ -49,6 +38,7 @@
         </div>
     </div>
 
+    <!-- Основной контейнер архива -->
     <div id="main-content" class="archive-container" style="display: none;">
         
         <div class="tabs-navigation">
@@ -65,13 +55,14 @@
 
         <div class="archive-body">
             
-            <div id="content-history" class="tab-content-block">
-                <div class="doc-header hide-for-typewriter">
+            <!-- Вкладка 1: История -->
+            <div id="content-history" class="tab-content-block animated-content">
+                <div class="doc-header">
                     <span class="decor-line"></span>
                     <h3>📜 ИСТОРИЧЕСКИЙ КОНТЕКСТ И СТАТУС EDC</h3>
                 </div>
                 
-                <div class="doc-block hide-for-typewriter">
+                <div class="doc-block">
                     <div class="doc-title-row">
                         <h4>Международный Оборонительный Корпус «Эспада» (EDC)</h4>
                         <img src="logo.png" alt="EDC Mini Logo" class="doc-mini-logo">
@@ -127,8 +118,9 @@
                 </div>
             </div>
 
-            <div id="tab-lock-screen" class="tab-lock-container" style="display: none;">
-                <div class="lock-prompt-box" id="auth-box-l2">
+            <!-- Экран блокировки внутри вкладок (Уровень 2) -->
+            <div id="tab-lock-screen" class="tab-lock-container animated-content" style="display: none;">
+                <div class="lock-prompt-box">
                     <span class="lock-icon">🔒</span>
                     <h5>ТРЕБУЕТСЯ ДОСТУП УРОВНЯ 2</h5>
                     <p>Для просмотра данных введите специальный ключ авторизации подразделения.</p>
@@ -140,13 +132,14 @@
                 </div>
             </div>
 
-            <div id="content-reglement" class="tab-content-block" style="display: none;">
-                <div class="doc-header hide-for-typewriter">
+            <!-- Вкладка 2: Военный регламент (TFB) -->
+            <div id="content-reglement" class="tab-content-block animated-content" style="display: none;">
+                <div class="doc-header">
                     <span class="decor-line"></span>
                     <h3>🏛️ ВОЕННЫЙ РЕГЛАМЕНТ И СПЕЦПОДРАЗДЕЛЕНИЯ</h3>
                 </div>
 
-                <div class="doc-block hide-for-typewriter">
+                <div class="doc-block">
                     <div class="doc-title-row">
                         <h4>Департамент Специального Военного Назначения: TFB</h4>
                         <span class="clearance-badge">Уровень доступа: Top Secret</span>
@@ -181,13 +174,14 @@
                 </div>
             </div>
 
-            <div id="content-operations" class="tab-content-block" style="display: none;">
-                <div class="doc-header hide-for-typewriter">
+            <!-- Вкладка 3: Секретные операции -->
+            <div id="content-operations" class="tab-content-block animated-content" style="display: none;">
+                <div class="doc-header">
                     <span class="decor-line"></span>
                     <h3>⚡ РЕЕСТР ЗАСЕКРЕЧЕННЫХ ОПЕРАЦИЙ TFB</h3>
                 </div>
 
-                <div class="doc-block hide-for-typewriter">
+                <div class="doc-block">
                     <div class="doc-title-row">
                         <h4>ОПЕРАЦИЯ «СВЕТ БЛИЖНИЙ»</h4>
                         <span class="clearance-badge">Статус: Завершено</span>
@@ -211,6 +205,8 @@
                             <li><strong>Фильтрация и аресты:</strong> Задержанные логисты, производители и рядовые торговцы прошли процедуру жесткой оперативной проверки и допросов специалистами контрразведки Корпуса. После извлечения оперативно значимой информации все выжившие фигуранты были переданы под конвой полиции Микелии для последующего суда.</li>
                             <li><strong>Тактическое использование улик:</strong> Крупные партии изъятых наркотических веществ не были уничтожены немедленно. Оперативные аналитики TFB использовали их в качестве приманки и ложных грузов для выманивания и ликвидации оставшихся в подполье лидеров синдикатов и их теневых спонсоров.</li>
                         </ul>
+
+                        <p class="italic-note">Итог: логистическая сеть картелей в секторе ликвидирована на 92%. Развернуто 4 новых скрытых опорных пункта TFB.</p>
                     </div>
                 </div>
             </div>
