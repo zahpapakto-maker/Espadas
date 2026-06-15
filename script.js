@@ -6,9 +6,54 @@ let currentSelectedTab = "history";
 let currentTypewriterTimeout = null;
 let currentUsername = "EDC-OFFICER";
 
-// Звуковой движок (Web Audio API) — Синтезирует звуки на лету!
-let audioCtx = null;
+// --- НОВЫЙ ФУНКЦИОНАЛ ---
 
+// 1. Кастомный курсор
+const cursor = document.getElementById('custom-cursor');
+document.addEventListener('mousemove', (e) => {
+    if (cursor) {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+    }
+});
+
+// Добавляем эффект при наведении на интерактивные элементы
+document.addEventListener('mouseover', (e) => {
+    if (e.target.matches('button, input, .tab-button, .censored-block, .export-btn')) {
+        cursor.classList.add('active');
+    }
+});
+document.addEventListener('mouseout', (e) => {
+    if (e.target.matches('button, input, .tab-button, .censored-block, .export-btn')) {
+        cursor.classList.remove('active');
+    }
+});
+
+// 2. Фоновый лог
+const logContainer = document.getElementById('background-logs');
+function addBackgroundLog() {
+    if (!logContainer) return;
+    const logLines = [
+        "SYSTEM_AUTH_SYNC::OK",
+        "RETRIEVING_SECTOR_07...",
+        "ACCESS_GRANTED_BY_TFB",
+        "DECRYPTING_PACKET_STREAM...",
+        "NETWORK_LATENCY::0.4ms",
+        "SECURITY_TOKEN_VERIFIED",
+        "BIO_SCAN_ACTIVE::OFFICER_ID",
+        "MEMORY_DUMP_IN_PROGRESS..."
+    ];
+    const line = document.createElement('div');
+    line.textContent = `${logLines[Math.floor(Math.random() * logLines.length)]} [${new Date().toLocaleTimeString()}]`;
+    logContainer.appendChild(line);
+    if (logContainer.children.length > 20) logContainer.removeChild(logContainer.firstChild);
+}
+setInterval(addBackgroundLog, 2500);
+
+// --- ОРИГИНАЛЬНЫЙ КОД ---
+
+// Звуковой движок
+let audioCtx = null;
 function initAudio() {
     if (!audioCtx) {
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -134,7 +179,6 @@ function checkLockdownStatus() {
     if (lockdownUntil && Date.now() < parseInt(lockdownUntil)) {
         [authScreen, mainContent, loadingScreen].forEach(el => el.style.display = 'none'); stopMatrix();
         document.getElementById('lockdown-screen').style.display = 'flex';
-        // Звук тревоги при локдауне
         if(audioCtx) playSoundError();
         const timerInterval = setInterval(() => {
             const remaining = parseInt(lockdownUntil) - Date.now();
@@ -165,7 +209,7 @@ function runTabTypewriter(container) {
             if (progress >= fullHTML.length) { currentIdx++; currentTypewriterTimeout = setTimeout(typeNextBlock, 30); return; }
             if (fullHTML[progress] === '<') { let endTag = fullHTML.indexOf('>', progress); if (endTag !== -1) progress = endTag + 1; else progress++; } else { progress++; }
             el.innerHTML = fullHTML.substring(0, progress);
-            if (Math.random() > 0.7) playSoundClick(); // Механический звук печати букв
+            if (Math.random() > 0.7) playSoundClick();
             currentTypewriterTimeout = setTimeout(characterStep, 3);
         } characterStep();
     } typeNextBlock();
@@ -179,7 +223,7 @@ function checkMainPassword() {
     loginBtn.style.display = 'none';
     scanContainer.style.display = 'block';
     errorMsg.style.display = 'none';
-    playSoundScan(); // Звук сканирования
+    playSoundScan();
 
     setTimeout(() => {
         scanContainer.style.display = 'none';
@@ -286,7 +330,6 @@ function openRedactedDoc() {
     playSoundClick();
     let currentContentHtml = "";
     
-    // ИСПРАВЛЕНИЕ: Динамическое выставление уровня секретности
     if (currentSelectedTab === "history") {
         currentContentHtml = contentHistory.querySelector('.doc-text').innerHTML;
         exportLevelSlot.innerText = "01-LEVEL / GENERAL";
@@ -321,17 +364,13 @@ const notificationTexts = [
 ];
 
 setInterval(() => {
-    // Аномалии срабатывают, только если пользователь вошел в архив
     if (mainContent.style.display === 'flex') {
         let dice = Math.random();
-
-        // 1. Аномалия: Глитч экрана
         if (dice < 0.3) {
             document.body.classList.add('ambient-glitch');
             playSoundGlitch();
             setTimeout(() => document.body.classList.remove('ambient-glitch'), 150);
         } 
-        // 2. Аномалия: Военное уведомление в углу
         else if (dice < 0.6) {
             let randomText = notificationTexts[Math.floor(Math.random() * notificationTexts.length)];
             toastBody.innerText = randomText;
@@ -339,7 +378,6 @@ setInterval(() => {
             playSoundGlitch();
             setTimeout(() => { toastContainer.style.display = 'none'; }, 4000);
         } 
-        // 3. Аномалия: Появление угрозы на радаре
         else if (dice < 0.9 && currentSelectedTab === "operations") {
             if (anomalyBlip) {
                 anomalyBlip.style.display = 'block';
@@ -347,10 +385,8 @@ setInterval(() => {
             }
         }
     }
-}, 15000); // Проверка каждые 15 секунд для динамики
+}, 15000);
 
-
-// ВЫХОД
 document.getElementById('logout-btn').addEventListener('click', () => {
     playSoundClick(); if (currentTypewriterTimeout) clearTimeout(currentTypewriterTimeout);
     mainContent.style.display = 'none'; authScreen.style.display = 'flex';
@@ -364,7 +400,5 @@ loginBtn.addEventListener('click', checkMainPassword);
 passwordInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') checkMainPassword(); });
 level2Password.addEventListener('keydown', (e) => { if (e.key === 'Enter') checkLevel2Password(); });
 
-// Отслеживание кликов по полям ввода для звука
 document.querySelectorAll('input').forEach(input => input.addEventListener('click', initAudio));
-
 checkLockdownStatus();
