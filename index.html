@@ -21,6 +21,11 @@
         </div>
     </div>
 
+    <div id="tactical-toast" class="toast-notification" style="display: none;">
+        <div class="toast-header">🛰️ ВХОДЯЩИЙ СИГНАЛ САЭ</div>
+        <div id="toast-body" class="toast-body">Запрос проверки целостности данных...</div>
+    </div>
+
     <div id="export-overlay" class="redacted-overlay" style="display: none;">
         <div class="redacted-paper">
             <button id="close-export">⨯ ЗАКРЫТЬ ДОССЬЕ</button>
@@ -30,7 +35,7 @@
                 <h3>КОРПУС EDC: АРХИВНЫЙ ПРОТОКОЛ</h3>
                 <img src="logo.png" alt="Mini Logo" style="max-width:40px;">
             </div>
-            <p class="italic-note">Классификация доступа: 01-LEVEL</p>
+            <p class="italic-note">Классификация доступа: <span id="export-level" style="font-weight: bold; color: #ff3344;">01-LEVEL</span></p>
             <hr>
             <p class="meta-grid">ДАННЫЕ ИЗВЛЕЧЕНЫ: 12/05/97 | ЭКСПОРТ: <span id="export-date"></span></p>
             <div class="doc-text" id="redacted-content">
@@ -129,7 +134,7 @@
                         
                         <p class="italic-note">«Эспада» действует оперативно и беспристрастно, оставаясь единственным гарантом мира на континенте.</p>
                         
-                        <h5>СТРУКТУРА УПРАВЛЕНИЯ И ВЕРХОВНОЕ КОМАНДОВАНИЕ</h5>
+                        <h5>СТРАТЕГИЯ УПРАВЛЕНИЯ И ВЕРХОВНОЕ КОМАНДОВАНИЕ</h5>
                         <p>Высшая административная, исполнительная и законодательная власть внутри организации сосредоточена в руках <strong>САЭ – Совета Администрации Эспады</strong>.</p>
                         
                         <div class="leader-card">
@@ -197,7 +202,7 @@
 
                         <h5>ОСНОВНЫЕ ТАКТИЧЕСКИЕ ЗАДАЧИ ДЕПАРТАМЕНТА:</h5>
                         <ul class="styled-list">
-                            <li><strong>Ликвидация и Зачистка:</strong> Проведение молниеносных штурмовых операций по полной зачистке укреплённых объектов.</li>
+                            <li><strong>Ликлидация и Зачистка:</strong> Проведение молниеносных штурмовых операций по полной зачистке укреплённых объектов.</li>
                             <li><strong>Кризисные Операции:</strong> Освобождение заложников и предотвращение диверсий на стратегических объектах.</li>
                             <li><strong>Защита VIP:</strong> Физическое устранение угроз национальной безопасности, а также охрана ключевых фигур Корпуса.</li>
                         </ul>
@@ -227,6 +232,7 @@
                             <circle class="tactical-blip blip-1" cx="20" cy="30" r="1" />
                             <circle class="tactical-blip blip-2" cx="80" cy="65" r="1.5" />
                             <circle class="tactical-blip blip-3" cx="60" cy="15" r="1" />
+                            <circle id="anomaly-blip" class="tactical-blip" cx="45" cy="75" r="2" style="fill: #ff3344; display:none;" />
                         </svg>
                     </div>
                 </div>
@@ -265,6 +271,12 @@
             <button id="logout-btn">⨯ ВЫЙТИ ИЗ АРХИВА</button>
         </div>
 
+    </div>
+
+    <div class="ticker-wrap">
+        <div class="ticker-content">
+            [INFO] Сектор С-0: Статус СТАБИЛЬНЫЙ... [WARNING] Зафиксирована повышенная активность в радиоэфире Микелии... [SYSTEM] Проверка целостности базы данных EDC... [ALERT] Спецотряд TFB-3 переведен в режим ожидания повышенной готовности... [DATA] Потоковый мониторинг эфира включен... [SECURITY] Протоколы шифрования обновлены...
+        </div>
     </div>
 
     <script src="script.js"></script>
