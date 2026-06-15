@@ -18,7 +18,39 @@
     box-sizing: border-box;
 }
 
-/* ГЛОБАЛЬНЫЕ СМЕНЫ ФОНОВ С УСИЛЕНИЕМ ПРИОРИТЕТА */
+/* ЭФФЕКТ ЭЛТ МОНИТОРА (CRT) С КАНАЛАМИ И МЕРЦАНИЕМ */
+.crt-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    background-size: 100% 3px, 3px 100%;
+    z-index: 99999;
+    pointer-events: none;
+    animation: crt-flicker 0.15s infinite;
+}
+
+@keyframes crt-flicker {
+    0% { opacity: 0.98; }
+    50% { opacity: 1; }
+    100% { opacity: 0.99; }
+}
+
+/* МАТРИЧНЫЙ ХОЛСТ */
+#matrix-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    display: none;
+    opacity: 0.25; /* Прозрачность чтобы текст читался */
+}
+
+/* ГЛОБАЛЬНЫЕ СМЕНЫ ФОНОВ */
 body.theme-blue {
     background: #030812 !important;
     --current-color: var(--primary-blue);
@@ -48,24 +80,75 @@ body {
     transition: background 0.3s ease;
 }
 
-/* АНИМАЦИЯ ПОЯВЛЕНИЯ ТЕКСТА */
-.animated-content {
-    animation: fadeInSlide 0.4s ease-out forwards !important;
-    opacity: 0;
+/* ГЛИТЧ-ЭФФЕКТ ПРИ ОШИБКЕ ПАРОЛЯ */
+.glitch-error {
+    animation: glitch-shake 0.4s linear;
+    border-color: var(--primary-red) !important;
+    box-shadow: 0 0 40px rgba(255, 51, 68, 0.4) !important;
 }
 
-@keyframes fadeInSlide {
-    from {
-        opacity: 0;
-        transform: translateY(8px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+@keyframes glitch-shake {
+    0% { transform: translate(0, 0) skewX(0deg); filter: hue-rotate(0deg); }
+    10% { transform: translate(-6px, 3px) skewX(-5deg); }
+    20% { transform: translate(6px, -2px) skewX(10deg); filter: hue-rotate(90deg); }
+    30% { transform: translate(-3px, -3px) skewX(-12deg); }
+    40% { transform: translate(4px, 4px) skewX(0deg); filter: hue-rotate(180deg); }
+    50% { transform: translate(-5px, 1px) skewX(5deg); }
+    60% { transform: translate(5px, -4px) skewX(-5deg); filter: hue-rotate(270deg); }
+    70% { transform: translate(-2px, 3px) skewX(0deg); }
+    80% { transform: translate(3px, -1px) skewX(2deg); }
+    100% { transform: translate(0, 0) skewX(0deg); filter: hue-rotate(360deg); }
 }
 
-/* ЭКРАНЫ АВТОРИЗАЦИИ И ЗАГРУЗКИ */
+/* АВАРИЙНЫЙ ЭКРАН УНИЧТОЖЕНИЯ (LOCKDOWN) */
+.lockdown-bg {
+    background: #050001 !important;
+    border: 4px solid #ff3344;
+    z-index: 100000 !important;
+}
+
+.lockdown-box {
+    max-width: 600px;
+    padding: 40px;
+    background: #120204;
+    border: 2px solid #ff3344;
+    text-align: center;
+    box-shadow: 0 0 50px rgba(255, 51, 68, 0.3);
+    animation: pulse-red-border 2s infinite;
+}
+
+.alarm-text {
+    color: #ff3344;
+    font-size: 1.6rem;
+    margin-bottom: 20px;
+    letter-spacing: 2px;
+    text-shadow: 0 0 10px #ff3344;
+    animation: text-flash 1s infinite;
+}
+
+.lockdown-desc { color: #ff9999; margin-bottom: 10px; font-size: 1.1rem; }
+.lockdown-warn { color: #804045; margin-bottom: 30px; font-size: 0.95rem; font-style: italic; }
+
+.countdown-timer {
+    font-family: monospace;
+    font-size: 4.5rem;
+    color: #ff3344;
+    font-weight: bold;
+    text-shadow: 0 0 20px #ff3344;
+}
+
+@keyframes pulse-red-border {
+    0% { box-shadow: 0 0 20px rgba(255, 51, 68, 0.2); }
+    50% { box-shadow: 0 0 50px rgba(255, 51, 68, 0.5); }
+    100% { box-shadow: 0 0 20px rgba(255, 51, 68, 0.2); }
+}
+
+@keyframes text-flash {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+
+/* ТЕРМИНАЛЬНЫЕ ЭКРАНЫ */
 .terminal-screen {
     position: fixed;
     top: 0;
@@ -88,6 +171,7 @@ body {
     padding: 40px;
     text-align: center;
     box-shadow: 0 0 30px rgba(0, 110, 255, 0.15);
+    transition: all 0.3s ease;
 }
 
 .terminal-logo {
@@ -164,7 +248,7 @@ body {
     font-family: monospace;
 }
 
-/* ИНТЕРФЕЙС АРХИВА */
+/* АРХИВ */
 .archive-container {
     max-width: 850px;
     margin: 0 auto;
@@ -346,7 +430,6 @@ body {
     margin-bottom: 10px;
 }
 
-/* ФОРМА АВТОРИЗАЦИИ ВНУТРИ ВКЛАДОК */
 .tab-lock-container {
     width: 100%;
     padding: 60px 20px;
