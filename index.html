@@ -3,62 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EDC | ESPADA ARCHIVE SYSTEM</title>
+    <title>Международный Оборонительный Корпус EDC</title>
     <link rel="stylesheet" href="style.css">
-    </head>
+</head>
 <body class="theme-blue">
 
-    <div id="custom-cursor"></div>
-    <div id="background-logs"></div>
     <div class="crt-overlay"></div>
+
     <canvas id="matrix-canvas"></canvas>
 
-    <div id="lockdown-screen" class="terminal-screen" style="display: none;">
+    <div id="lockdown-screen" class="terminal-screen lockdown-bg" style="display: none;">
         <div class="lockdown-box">
-            <h1 class="alarm-text">🚨 ТРЕВОГА: РЕЖИМ БЛОКИРОВКИ 🚨</h1>
-            <p class="lockdown-desc">Обнаружена попытка взлома. Секторы EDC изолированы.</p>
+            <h1 class="alarm-text">🚨 ТРЕВОГА: РЕЖИМ САМОУНИЧТОЖЕНИЯ 🚨</h1>
+            <p class="lockdown-desc">Зафиксирована множественная попытка несанкционированного подбора ключей доступа.</p>
+            <p class="lockdown-warn">Локальные секторы архива EDC изолированы. Доступ полностью заблокирован.</p>
             <div class="countdown-timer" id="lockdown-timer">05:00</div>
         </div>
     </div>
 
     <div id="tactical-toast" class="toast-notification" style="display: none;">
         <div class="toast-header">🛰️ ВХОДЯЩИЙ СИГНАЛ САЭ</div>
-        <div id="toast-body" class="toast-body"></div>
+        <div id="toast-body" class="toast-body">Запрос проверки целостности данных...</div>
     </div>
 
     <div id="export-overlay" class="redacted-overlay" style="display: none;">
         <div class="redacted-paper">
-            <button id="close-export">⨯ ЗАКРЫТЬ ДОСЬЕ</button>
+            <button id="close-export">⨯ ЗАКРЫТЬ ДОССЬЕ</button>
             <div class="stamp danger-stamp">TOP SECRET</div>
             <div class="stamp-round">CENSORED</div>
             <div class="doc-title-row">
                 <h3>КОРПУС EDC: АРХИВНЫЙ ПРОТОКОЛ</h3>
+                <img src="logo.png" alt="Mini Logo" style="max-width:40px;">
             </div>
-            <p class="italic-note">Классификация: <span id="export-level">01-LEVEL</span></p>
+            <p class="italic-note">Классификация доступа: <span id="export-level" style="font-weight: bold; color: #ff3344;">01-LEVEL</span></p>
             <hr>
             <p class="meta-grid">ДАННЫЕ ИЗВЛЕЧЕНЫ: 12/05/97 | ЭКСПОРТ: <span id="export-date"></span></p>
-            <div class="doc-text" id="redacted-content"></div>
+            <div class="doc-text" id="redacted-content">
+                </div>
             <p class="italic-note">[ДОКУМЕНТ УРЕЗАН ЦЕНЗУРОЙ СОГЛАСНО ПРОТОКОЛУ САЭ 911]</p>
         </div>
     </div>
 
     <div id="auth-screen" class="terminal-screen">
         <div class="auth-box" id="auth-box-l1">
-            <img src="logo.png" alt="EDC" class="terminal-logo">
-            <p class="status-msg">⚡ АРХИВ EDC ESPADA — ВХОД В СИСТЕМУ ⚡</p>
-            <p id="error-msg" class="error-text" style="display: none;">⛔ ОШИБКА АУТЕНТИФИКАЦИИ.</p>
+            <img src="logo.png" alt="EDC Logo" class="terminal-logo">
+            <p class="status-msg">⚡ АРХИВ EDC ESPADA — ДОСТУП ПО КЛЮЧУ ⚡</p>
+            <p id="error-msg" class="error-text" style="display: none;">⛔ ОШИБКА АУТЕНТИФИКАЦИИ. ДОСТУП ЗАПРЕЩЁН.</p>
             
             <div class="input-group">
-                <label>ИДЕНТИФИКАТОР СОТРУДНИКА</label>
-                <input type="text" id="username" placeholder="EDC-OFFICER">
+                <label>ИДЕНТИФИКАТОР СОТРУДНИКА (ЛОГИН)</label>
+                <input type="text" id="username" placeholder="EDC-OFFICER" autocomplete="off">
             </div>
+
             <div class="input-group">
-                <label>КЛЮЧ ДОСТУПА</label>
+                <label>КЛЮЧ ДОСТУПА / ПАРОЛЬ</label>
                 <input type="password" id="password" placeholder="••••••••">
             </div>
 
             <div id="scan-container" class="biometric-scanner" style="display: none;">
-                <div class="scan-frame"><div class="laser-line"></div><div class="eye-graphic"></div></div>
+                <div class="scan-frame">
+                    <div class="laser-line"></div>
+                    <div class="eye-graphic"></div>
+                </div>
                 <p class="scan-msg">СКАНИРОВАНИЕ СЕТЧАТКИ...</p>
             </div>
 
@@ -68,58 +74,208 @@
 
     <div id="loading-screen" class="terminal-screen" style="display: none;">
         <div class="loading-box">
-            <p>[ ИНИЦИАЛИЗАЦИЯ СЕКТОРОВ EDC ]</p>
+            <p>[ Управляемая Дисковая Операционная Система: инициализация секторов ]</p>
             <div class="progress-bar"><div class="progress-fill"></div></div>
             <p class="percent">0%</p>
         </div>
     </div>
 
-    <main id="main-content" class="archive-container" style="display: none;">
-        <nav class="tabs-navigation">
-            <button class="tab-button active" id="btn-tab-history">📜 ИСТОРИЯ</button>
-            <button class="tab-button" id="btn-tab-reglement">🏛️ РЕГЛАМЕНТ</button>
-            <button class="tab-button" id="btn-tab-operations">⚡ ОПЕРАЦИИ</button>
-        </nav>
+    <div id="main-content" class="archive-container" style="display: none;">
+        
+        <div class="tabs-navigation">
+            <button class="tab-button active" id="btn-tab-history">
+                <span>📜 ИСТОРИЧЕСКИЙ КОНТЕКСТ</span>
+            </button>
+            <button class="tab-button" id="btn-tab-reglement">
+                <span>🏛️ ВОЕННЫЙ РЕГЛАМЕНТ</span>
+            </button>
+            <button class="tab-button" id="btn-tab-operations">
+                <span>⚡ СЕКРЕТНЫЕ ОПЕРАЦИИ</span>
+            </button>
+        </div>
 
-        <section class="archive-body">
-            <h6>ДОБРО ПОЖАЛОВАТЬ, МАРШАЛ <span id="welcome-username">EDC-OFFICER</span>.</h6>
+        <div class="archive-body">
             
-            <div id="content-history" class="tab-content-block">
-                <div class="doc-header"><h3>📜 ИСТОРИЧЕСКИЙ КОНТЕКСТ</h3></div>
-                <div class="doc-text"><p>Текст архива...</p></div>
-                <button class="export-btn">Экспорт досье</button>
+            <div id="welcome-bar" class="animated-content">
+                <h6>ДОБРО ПОЖАЛОВАТЬ, МАРШАЛ <span id="welcome-username">EDC-OFFICER</span>.</h6>
             </div>
 
-            <div id="tab-lock-screen" style="display: none;">
+            <div id="content-history" class="tab-content-block">
+                <div class="doc-header hide-for-typewriter">
+                    <span class="decor-line"></span>
+                    <h3>📜 ИСТОРИЧЕСКИЙ КОНТЕКСТ И СТАТУС EDC</h3>
+                </div>
+                
+                <div class="doc-block hide-for-typewriter">
+                    <div class="doc-title-row">
+                        <h4>Международный Оборонительный Корпус «Эспада» (EDC)</h4>
+                        <img src="logo.png" alt="EDC Mini Logo" class="doc-mini-logo">
+                    </div>
+                    
+                    <div class="meta-grid">
+                        <p><strong>Дата учреждения:</strong> 5 января 1997 года</p>
+                        <p><strong>Текущий статус:</strong> Активен</p>
+                        <p><strong>Штаб-квартира:</strong> Сектор С-0, Территория Международного Контроля</p>
+                    </div>
+                    
+                    <div class="doc-text">
+                        <p>Оборонительный Корпус «Эспада» был рождён в результате political кризиса между двумя государствами, Унитеррой и Микелией. Многолетняя серия конфликт, поставивший регион на путь истощения, завершился подписанием исторических мирных соглашений.</p>
+                        
+                        <p>Дабы навсегда исключить саму возможность повторной эскалации, полностью ликвидировать риск реваншизма и предотвратить новые потрясения, решением стран содружества был учрежден Оборонительный Корпус «Эспада».</p>
+                        
+                        <p>Корпус получил уникальный статус, а именно независимая, автономная военная структура, не подчиняющаяся ни одному правительству напрямую. Постоянная штаб-квартира организации была возведена на демилитаризованных землях, официально переданных под юрисдикцию Международного Контроля.</p>
+                        
+                        <h5>СТРАТЕГИЧЕСКИЕ ЗАДАЧИ И МИССИЯ</h5>
+                        <ul class="styled-list">
+                            <li><strong>Глобальный паритет:</strong> Немедленное подавление любых попыток нарушить границы стран новообразованного содружества.</li>
+                            <li><strong>Силовой надзор:</strong> Выполнение сложных боевых, оборонительных и антитеррористических задач в зонах повышенного риска.</li>
+                            <li><strong>Сохранение Порядка:</strong> Локализация локальных конфликтов до момента их перерастания в полномасштабные войны.</li>
+                        </ul>
+                        
+                        <p class="italic-note">«Эспада» действует оперативно и беспристрастно, оставаясь единственным гарантом мира на континенте.</p>
+                        
+                        <h5>СТРАТЕГИЯ УПРАВЛЕНИЯ И ВЕРХОВНОЕ КОМАНДОВАНИЕ</h5>
+                        <p>Высшая административная, исполнительная и законодательная власть внутри организации сосредоточена в руках <strong>САЭ – Совета Администрации Эспады</strong>.</p>
+                        
+                        <div class="leader-card">
+                            <span class="leader-num">01</span>
+                            <div class="leader-info">
+                                <h6>Айдзаэн Соскэ</h6>
+                                <span class="leader-rank">Унитеррский Маршал</span>
+                                <p>Верховный главнокомандующий боевыми силами Корпуса. Архитектор оборонительной доктрины регулярных частей «Эспады».</p>
+                            </div>
+                        </div>
+
+                        <div class="leader-card">
+                            <span class="leader-num">02</span>
+                            <div class="leader-info">
+                                <h6>Саймон Стилл</h6>
+                                <span class="leader-rank">Глава Военно-логистического корпуса</span>
+                                <p>Человек, обеспечивающий жизнедеятельность организации. Под его началом находится всё снабжение и разработка передовых технологий.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="export-btn">Экспорт досье [📜]</button>
+            </div>
+
+            <div id="tab-lock-screen" class="tab-lock-container" style="display: none;">
                 <div class="lock-prompt-box" id="auth-box-l2">
                     <span class="lock-icon">🔒</span>
-                    <h5>ТРЕБУЕТСЯ УРОВЕНЬ ДОСТУПА 2</h5>
-                    <input type="password" id="level2-password" placeholder="КОД TFB">
-                    <button id="level2-btn">ПОДТВЕРДИТЬ</button>
+                    <h5>ТРЕБУЕТСЯ ДОСТУП УРОВНЯ 2</h5>
+                    <p>Для просмотра секретных данных введите ключ авторизации подразделения TFB.</p>
+                    <p id="level2-error" class="error-text" style="display: none;">⛔ ОШИБКА ДОСТУПА. КЛЮЧ НЕ ДЕЙСТВИТЕЛЕН.</p>
+                    <div class="inline-auth-form">
+                        <input type="password" id="level2-password" placeholder="КЛЮЧ ДОСТУПА УРОВНЯ 2">
+                        <button id="level2-btn">ПОДТВЕРДИТЬ</button>
+                    </div>
                 </div>
             </div>
 
             <div id="content-reglement" class="tab-content-block" style="display: none;">
-                <div class="doc-header"><h3>🏛️ ВОЕННЫЙ РЕГЛАМЕНТ</h3></div>
-                <div class="doc-text"></div>
-                <button class="export-btn">Экспорт досье</button>
+                <div class="doc-header hide-for-typewriter">
+                    <span class="decor-line"></span>
+                    <h3>🏛️ ВОЕННЫЙ РЕГЛАМЕНТ И СПЕЦПОДРАЗДЕЛЕНИЯ</h3>
+                </div>
+
+                <div class="doc-block hide-for-typewriter">
+                    <div class="doc-title-row">
+                        <h4>Департамент Специального Военного Назначения: TFB</h4>
+                        <span class="clearance-badge">Уровень доступа: Top Secret</span>
+                    </div>
+
+                    <div class="meta-grid">
+                        <p><strong>Кодовое наименование:</strong> TFB (Task Force Berserk / Оперативно-тактическая группа «Берсерк»)</p>
+                        <p><strong>Юрисдикция:</strong> Наднациональная (Все секторы содружества)</p>
+                        <p><strong>Прямое подчинение:</strong> САЭ</p>
+                    </div>
+
+                    <div class="doc-text">
+                        <p><strong>Task Force Berserk (TFB)</strong> — элитный военизированный департамент специального назначения, сформированный для выполнения критических операций высокой степени риска.</p>
+                        
+                        <p>Данное спецподразделение наделено абсолютной свободой оперативных действий. Подразделения TFB обладают эксклюзивным правом и юридическим мандатом на ведение боевых действий на суверенной территории любых государств содружества <strong>без обязательного уведомления или согласования с местным командованием</strong>.</p>
+                        
+                        <p class="danger-box">
+                            <strong>ОСОБЫЙ СТАТУС И ПОЛНОМОЧИЯ:</strong><br>
+                            Оперативники группы подчиняются исключительно Верховному Совету САЭ. Имеют официальное право полностью игнорировать стандартный общий устав ради достижения оперативных целей.
+                        </p>
+
+                        <h5>ОСНОВНЫЕ ТАКТИЧЕСКИЕ ЗАДАЧИ ДЕПАРТАМЕНТА:</h5>
+                        <ul class="styled-list">
+                            <li><strong>Ликлидация и Зачистка:</strong> Проведение молниеносных штурмовых операций по полной зачистке укреплённых объектов.</li>
+                            <li><strong>Кризисные Операции:</strong> Освобождение заложников и предотвращение диверсий на стратегических объектах.</li>
+                            <li><strong>Защита VIP:</strong> Физическое устранение угроз национальной безопасности, а также охрана ключевых фигур Корпуса.</li>
+                        </ul>
+                    </div>
+                </div>
+                <button class="export-btn">Экспорт досье [🏛️]</button>
             </div>
 
             <div id="content-operations" class="tab-content-block" style="display: none;">
-                <div class="doc-header"><h3>⚡ СЕКРЕТНЫЕ ОПЕРАЦИИ</h3></div>
-                <div class="doc-text"></div>
-                <button class="export-btn">Экспорт досье</button>
-            </div>
-        </section>
+                <div class="doc-header hide-for-typewriter">
+                    <span class="decor-line"></span>
+                    <h3>⚡ РЕЕСТР ЗАСЕКРЕЧЕННЫХ ОПЕРАЦИЙ TFB</h3>
+                </div>
 
-        <footer class="archive-footer">
-            <button id="logout-btn">⨯ ВЫЙТИ ИЗ СИСТЕМЫ</button>
-        </footer>
-    </main>
+                <div class="doc-block radar-block animated-content hide-for-typewriter">
+                    <h5>АКТИВНЫЙ РАДАР СЕКТОРА TFB-GREEN</h5>
+                    <div id="radar-container">
+                        <svg class="tactical-radar" viewBox="0 0 100 100">
+                            <circle class="radar-bg" cx="50" cy="50" r="48" />
+                            <circle class="radar-grid" cx="50" cy="50" r="10" />
+                            <circle class="radar-grid" cx="50" cy="50" r="22" />
+                            <circle class="radar-grid" cx="50" cy="50" r="34" />
+                            <circle class="radar-grid" cx="50" cy="50" r="46" />
+                            <line class="radar-line-x" x1="50" y1="2" x2="50" y2="98" />
+                            <line class="radar-line-y" x1="2" y1="50" x2="98" y2="50" />
+                            <path class="radar-sweep" d="M50,50 L50,2 A48,48 0 0,1 98,50 Z" />
+                            <circle class="tactical-blip blip-1" cx="20" cy="30" r="1" />
+                            <circle class="tactical-blip blip-2" cx="80" cy="65" r="1.5" />
+                            <circle class="tactical-blip blip-3" cx="60" cy="15" r="1" />
+                            <circle id="anomaly-blip" class="tactical-blip" cx="45" cy="75" r="2" style="fill: #ff3344; display:none;" />
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="doc-block hide-for-typewriter">
+                    <div class="doc-title-row">
+                        <h4>ОПЕРАЦИЯ «СВЕТ БЛИЖНИЙ»</h4>
+                        <span class="clearance-badge">Статус: Завершено</span>
+                    </div>
+
+                    <div class="meta-grid">
+                        <p><strong>Дата проведения:</strong> 17 апреля 1997 года</p>
+                        <p><strong>Локация:</strong> Микелия (Внутренние сектора)</p>
+                    </div>
+
+                    <div class="doc-text">
+                        <p>В апреле 1997 года деятельность военизированных наркокартелей в Микелии достигла критического уровня. Местные правоохранительные органы утратили контроль над удаленными провинциями.</p>
+                        
+                        <p>Руководством TFB было принято решение о проведении серии жестких превентивных мероприятий без предварительного согласования с правительством Микелии.</p>
+
+                        <p><strong>Ход мероприятий:</strong></p>
+                        <ul class="styled-list">
+                            <li><strong>Зачистка:</strong> Штурмовые группы TFB провели одновременные рейды по ключевым укрепленным узлам синдикатов.</li>
+                            <li><strong>Перехват ресурсов:</strong> Все действующие лаборатории и техническое оборудование были полностью изъяты. Оборудованы новые базы снабжения TFB.</li>
+                            <li><strong>Фильтрация:</strong> Задержанные фигуранты были переданы под конвой полиции Микелии.</li>
+                            <li><strong>Использование улик:</strong> Аналитики TFB использовали изъятые вещества как приманку для ликвидации оставшихся лидеров синдикатов.</li>
+                        </ul>
+                    </div>
+                </div>
+                <button class="export-btn">Экспорт досье [⚡]</button>
+            </div>
+
+        </div>
+
+        <div class="archive-footer">
+            <button id="logout-btn">⨯ ВЫЙТИ ИЗ АРХИВА</button>
+        </div>
+
+    </div>
 
     <div class="ticker-wrap">
         <div class="ticker-content">
-            [INFO] Сектор С-0: Статус СТАБИЛЬНЫЙ... [SYSTEM] Протоколы шифрования EDC активны... [ALERT] TFB-3 в режиме готовности...
+            [INFO] Сектор С-0: Статус СТАБИЛЬНЫЙ... [WARNING] Зафиксирована повышенная активность в радиоэфире Микелии... [SYSTEM] Проверка целостности базы данных EDC... [ALERT] Спецотряд TFB-3 переведен в режим ожидания повышенной готовности... [DATA] Потоковый мониторинг эфира включен... [SECURITY] Протоколы шифрования обновлены...
         </div>
     </div>
 
