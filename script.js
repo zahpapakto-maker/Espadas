@@ -1,9 +1,6 @@
-// --- НАСТРОЙКИ ХЭШЕЙ ДОСТУПА EDC (БЕЗОПАСНЫЙ СТАНДАРТ) ---
-// SHA-256 хэши от паролей:
-// "ESPADA1997" -> 4f6ade81e9f2913bf846ec568778f694e09f59fbf6804d9c79fa29d381bcf7ff
-// "ESPADA1488" -> 3479a071fe0e3fdfdb0d40e10f607147dbaf924b26715f573bfbc0b2c37731bf
-const GENERAL_HASH = "4f6ade81e9f2913bf846ec568778f694e09f59fbf6804d9c79fa29d381bcf7ff";
-const BERSERK_HASH = "3479a071fe0e3fdfdb0d40e10f607147dbaf924b26715f573bfbc0b2c37731bf";
+// --- НАСТРОЙКИ ДОСТУПА EDC (КЛАССИЧЕСКИЙ ТЕКСТ) ---
+const GENERAL_PASSWORD = "ESPADA1997"; 
+const BERSERK_PASSWORD = "ESPADA1488"; 
 
 let isLevel2Unlocked = false; 
 let currentSelectedTab = "history"; 
@@ -11,13 +8,75 @@ let currentTypewriterTimeout = null;
 let currentUsername = "EDC-OFFICER";
 let audioCtx = null;
 
-// Вспомогательная функция для генерации SHA-256 хэша
-async function hashPassword(password) {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(password);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+// --- СИНТЕСАТОР ЗВУКОВ (Web Audio API) ---
+function initAudio() {
+    if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+}
+
+function playSoundClick() {
+    if (!audioCtx) return;
+    let osc = audioCtx.createOscillator();
+    let gain = audioCtx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(900, audioCtx.currentTime);
+    gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.04);
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.start(); osc.stop(audioCtx.currentTime + 0.04);
+}
+
+function playSoundScan() {
+    if (!audioCtx) return;
+    let osc = audioCtx.createOscillator();
+    let gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+    osc.frequency.linearRampToValueAtTime(1200, audioCtx.currentTime + 2.3);
+    gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 2.5);
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.start(); osc.stop(audioCtx.currentTime + 2.5);
+}
+
+function playSoundError() {
+    if (!audioCtx) return;
+    let osc = audioCtx.createOscillator();
+    let gain = audioCtx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(120, audioCtx.currentTime);
+    osc.frequency.linearRampToValueAtTime(60, audioCtx.currentTime + 0.3);
+    gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.start(); osc.stop(audioCtx.currentTime + 0.35);
+}
+
+function playSoundGlitch() {
+    if (!audioCtx) return;
+    let osc = audioCtx.createOscillator();
+    let gain = audioCtx.createGain();
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(Math.random() * 300 + 80, audioCtx.currentTime);
+    gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.start(); osc.stop(audioCtx.currentTime + 0.08);
+}
+
+function playSoundSuccess() {
+    if (!audioCtx) return;
+    let osc1 = audioCtx.createOscillator(), osc2 = audioCtx.createOscillator();
+    let gain = audioCtx.createGain();
+    osc1.type = 'sine'; osc2.type = 'sine';
+    osc1.frequency.setValueAtTime(600, audioCtx.currentTime);
+    osc2.frequency.setValueAtTime(800, audioCtx.currentTime + 0.08);
+    gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.25);
+    osc1.connect(gain); osc2.connect(gain); gain.connect(audioCtx.destination);
+    osc1.start(); osc1.stop(audioCtx.currentTime + 0.25);
+    osc2.start(); osc2.stop(audioCtx.currentTime + 0.25);
 }
 
 // Кэширование DOM-элементов
@@ -46,7 +105,7 @@ const level2Password = document.getElementById('level2-password');
 const level2Btn = document.getElementById('level2-btn');
 const level2Error = document.getElementById('level2-error');
 
-// --- 1. ЦИФРОВАЯ МАТРИЦА (Оптимизированная) ---
+// --- 1. ЦИФРОВАЯ МАТРИЦА ---
 const canvas = document.getElementById('matrix-canvas');
 const ctx = canvas.getContext('2d');
 let matrixInterval = null;
@@ -166,7 +225,7 @@ function runTabTypewriter(container) {
     typeNextBlock();
 }
 
-// --- 4. АУТЕНТИФИКАЦИЯ И СКАНИРОВАНИЕ ---
+// --- 4. АУТЕНТИФИКАЦИЯ И СКАНИРОВАНИЕ (ПРЯМАЯ ПРОВЕРКА ТЕКСТА) ---
 function checkMainPassword() {
     initAudio();
     if (checkLockdownStatus()) return;
@@ -176,15 +235,12 @@ function checkMainPassword() {
     errorMsg.style.display = 'none';
     playSoundScan(); 
 
-    const enteredPassword = passwordInput.value;
-
-    setTimeout(async () => {
+    setTimeout(() => {
         scanContainer.style.display = 'none';
         loginBtn.style.display = 'block';
 
-        const inputHash = await hashPassword(enteredPassword);
-
-        if (inputHash === GENERAL_HASH) {
+        // Прямая сверка строк без использования асинхронных хэшей
+        if (passwordInput.value === GENERAL_PASSWORD) {
             playSoundSuccess();
             authScreen.style.display = 'none';
             loadingScreen.style.display = 'flex';
@@ -266,28 +322,24 @@ function renderActiveTab(tabName) {
     });
 });
 
+// ПРЯМАЯ ПРОВЕРКА ВТОРОГО УРОВНЯ ДОСТУПА
 function checkLevel2Password() {
     if (checkLockdownStatus()) return;
-    const enteredPassword = level2Password.value;
-
-    setTimeout(async () => {
-        const inputHash = await hashPassword(enteredPassword);
-        
-        if (inputHash === BERSERK_HASH) {
-            playSoundSuccess();
-            isLevel2Unlocked = true; 
-            level2Error.style.display = 'none'; 
-            level2Password.value = '';
-            localStorage.setItem('edc_failed_attempts', 0); 
-            renderActiveTab(currentSelectedTab);
-        } else {
-            level2Error.style.display = 'block'; 
-            level2Password.value = '';
-            incrementFailedAttempts(document.getElementById('auth-box-l2'));
-        }
-    }, 100);
+    
+    // Прямая сверка строк для TFB-доступа
+    if (level2Password.value === BERSERK_PASSWORD) {
+        playSoundSuccess();
+        isLevel2Unlocked = true; 
+        level2Error.style.display = 'none'; 
+        level2Password.value = '';
+        localStorage.setItem('edc_failed_attempts', 0); 
+        renderActiveTab(currentSelectedTab);
+    } else {
+        level2Error.style.display = 'block'; 
+        level2Password.value = '';
+        incrementFailedAttempts(document.getElementById('auth-box-l2'));
+    }
 }
-level2Btn.addEventListener('click', checkLevel2Password);
 
 // --- 6. БЕЗОПАСНЫЙ ГЕНЕРАТОР ЦЕНЗУРЫ (DOM-based) ---
 function redactedTextGenerator(htmlContent) {
@@ -364,11 +416,13 @@ setInterval(() => {
     if (mainContent.style.display === 'flex') {
         let dice = Math.random();
 
+        // 1. Искажения терминала (Глитч)
         if (dice < 0.25) {
             document.body.classList.add('ambient-glitch');
             playSoundGlitch();
             setTimeout(() => document.body.classList.remove('ambient-glitch'), 120);
         } 
+        // 2. Всплывающее тактическое сообщение САЭ
         else if (dice < 0.55) {
             let randomText = notificationTexts[Math.floor(Math.random() * notificationTexts.length)];
             toastBody.innerText = randomText;
@@ -376,6 +430,7 @@ setInterval(() => {
             playSoundGlitch();
             setTimeout(() => { toastContainer.style.display = 'none'; }, 4000);
         } 
+        // 3. Аномалия радара в секторе операций
         else if (dice < 0.85 && currentSelectedTab === "operations") {
             if (anomalyBlip) {
                 anomalyBlip.style.display = 'block';
@@ -385,77 +440,6 @@ setInterval(() => {
         }
     }
 }, 12000);
-
-// --- СИНТЕСАТОР ЗВУКОВ (Web Audio API) ---
-function initAudio() {
-    if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    }
-}
-
-function playSoundClick() {
-    if (!audioCtx) return;
-    let osc = audioCtx.createOscillator();
-    let gain = audioCtx.createGain();
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(900, audioCtx.currentTime);
-    gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.04);
-    osc.connect(gain); gain.connect(audioCtx.destination);
-    osc.start(); osc.stop(audioCtx.currentTime + 0.04);
-}
-
-function playSoundScan() {
-    if (!audioCtx) return;
-    let osc = audioCtx.createOscillator();
-    let gain = audioCtx.createGain();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(300, audioCtx.currentTime);
-    osc.frequency.linearRampToValueAtTime(1200, audioCtx.currentTime + 2.3);
-    gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 2.5);
-    osc.connect(gain); gain.connect(audioCtx.destination);
-    osc.start(); osc.stop(audioCtx.currentTime + 2.5);
-}
-
-function playSoundError() {
-    if (!audioCtx) return;
-    let osc = audioCtx.createOscillator();
-    let gain = audioCtx.createGain();
-    osc.type = 'sawtooth';
-    osc.frequency.setValueAtTime(120, audioCtx.currentTime);
-    osc.frequency.linearRampToValueAtTime(60, audioCtx.currentTime + 0.3);
-    gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
-    osc.connect(gain); gain.connect(audioCtx.destination);
-    osc.start(); osc.stop(audioCtx.currentTime + 0.35);
-}
-
-function playSoundGlitch() {
-    if (!audioCtx) return;
-    let osc = audioCtx.createOscillator();
-    let gain = audioCtx.createGain();
-    osc.type = 'square';
-    osc.frequency.setValueAtTime(Math.random() * 300 + 80, audioCtx.currentTime);
-    gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
-    osc.connect(gain); gain.connect(audioCtx.destination);
-    osc.start(); osc.stop(audioCtx.currentTime + 0.08);
-}
-
-function playSoundSuccess() {
-    if (!audioCtx) return;
-    let osc1 = audioCtx.createOscillator(), osc2 = audioCtx.createOscillator();
-    let gain = audioCtx.createGain();
-    osc1.type = 'sine'; osc2.type = 'sine';
-    osc1.frequency.setValueAtTime(600, audioCtx.currentTime);
-    osc2.frequency.setValueAtTime(800, audioCtx.currentTime + 0.08);
-    gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.25);
-    osc1.connect(gain); osc2.connect(gain); gain.connect(audioCtx.destination);
-    osc1.start(); osc1.stop(audioCtx.currentTime + 0.25);
-    osc2.start(); osc2.stop(audioCtx.currentTime + 0.25);
-}
 
 // СИСТЕМА ДЕАВТОРИЗАЦИИ (ВЫХОД)
 document.getElementById('logout-btn').addEventListener('click', () => {
@@ -472,7 +456,10 @@ document.getElementById('logout-btn').addEventListener('click', () => {
     exportOverlay.style.display = 'none';
 });
 
+// Назначение обработчиков событий
 loginBtn.addEventListener('click', checkMainPassword);
+level2Btn.addEventListener('click', checkLevel2Password);
+
 passwordInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') checkMainPassword(); });
 level2Password.addEventListener('keydown', (e) => { if (e.key === 'Enter') checkLevel2Password(); });
 
