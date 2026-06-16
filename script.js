@@ -1,12 +1,14 @@
 // --- НАСТРОЙКИ ДОСТУПА EDC (КЛАССИЧЕСКИЙ ТЕКСТ) ---
 const GENERAL_PASSWORD = "ESPADA1997"; 
 const BERSERK_PASSWORD = "ESPADA1488"; 
+const TERMINAL_VERSION = "v4.0.26-TACTICAL"; // Версия для правого верхнего угла
 
 let isLevel2Unlocked = false; 
 let currentSelectedTab = "history"; 
 let currentTypewriterTimeout = null;
 let currentUsername = "EDC-OFFICER";
 let audioCtx = null;
+let radarInterval = null; // Интервал для кастомной отрисовки радара
 
 // --- СИНТЕСАТОР ЗВУКОВ (Web Audio API) ---
 function initAudio() {
@@ -105,6 +107,23 @@ const level2Password = document.getElementById('level2-password');
 const level2Btn = document.getElementById('level2-btn');
 const level2Error = document.getElementById('level2-error');
 
+// Добавление плашки версии в правый верхний угол welcome-бара при инициализации
+function initSystemVersion() {
+    const welcomeBar = document.getElementById('welcome-bar');
+    if (welcomeBar && !document.getElementById('terminal-version-tag')) {
+        const versionSpan = document.createElement('span');
+        versionSpan.id = 'terminal-version-tag';
+        versionSpan.style.float = 'left';
+        versionSpan.style.fontFamily = 'monospace';
+        versionSpan.style.fontSize = '0.8rem';
+        versionSpan.style.opacity = '0.6';
+        versionSpan.style.color = 'var(--current-color)';
+        versionSpan.style.transition = 'color 0.3s ease';
+        versionSpan.innerText = TERMINAL_VERSION;
+        welcomeBar.insertBefore(versionSpan, welcomeBar.firstChild);
+    }
+}
+
 // --- 1. ЦИФРОВАЯ МАТРИЦА ---
 const canvas = document.getElementById('matrix-canvas');
 const ctx = canvas.getContext('2d');
@@ -143,7 +162,32 @@ function stopMatrix() {
 }
 window.addEventListener('resize', () => { if(mainContent.style.display === 'flex' && currentSelectedTab === 'operations') initMatrix(); });
 
-// --- 2. СИСТЕМА БЛОКИРОВКИ ПРИ УГРОЗЕ ---
+// --- 2. СИСТЕМА УПРАВЛЕНИЯ ТАКТИЧЕСКИМ РАДАРОМ ---
+function startRadarSimulation() {
+    if (radarInterval) clearInterval(radarInterval);
+    const sweep = document.querySelector('.radar-sweep');
+    if (!sweep) return;
+
+    let angle = 0;
+    radarInterval = setInterval(() => {
+        angle = (angle + 3) % 360;
+        sweep.setAttribute('transform', `rotate(${angle} 50 50)`);
+        
+        // Рандомный микроглитч радарных меток во время сканирования
+        if (Math.random() > 0.92) {
+            document.querySelectorAll('.tactical-blip').forEach(blip => {
+                blip.style.transform = `translate(${Math.random()*2 - 1}px, ${Math.random()*2 - 1}px)`;
+                setTimeout(() => blip.style.transform = 'none', 100);
+            });
+        }
+    }, 25);
+}
+
+function stopRadarSimulation() {
+    if (radarInterval) clearInterval(radarInterval);
+}
+
+// --- 3. СИСТЕМА БЛОКИРОВКИ ПРИ УГРОЗЕ ---
 function getFailedAttempts() { return parseInt(localStorage.getItem('edc_failed_attempts')) || 0; }
 function incrementFailedAttempts(boxElement) {
     let failed = getFailedAttempts() + 1; 
@@ -162,6 +206,7 @@ function checkLockdownStatus() {
     if (lockdownUntil && Date.now() < parseInt(lockdownUntil)) {
         [authScreen, mainContent, loadingScreen].forEach(el => el.style.display = 'none'); 
         stopMatrix();
+        stopRadarSimulation();
         document.getElementById('lockdown-screen').style.display = 'flex';
         const timerInterval = setInterval(() => {
             const remaining = parseInt(lockdownUntil) - Date.now();
@@ -182,7 +227,7 @@ function checkLockdownStatus() {
     return false;
 }
 
-// --- 3. ТАКТИЧЕСКИЙ ТЕЛЕТАЙП (Печать текста) ---
+// --- 4. ТАКТИЧЕСКИЙ РЕГЛАМЕНТ ПЕЧАТИ (Телетайп) ---
 function runTabTypewriter(container) {
     if (currentTypewriterTimeout) clearTimeout(currentTypewriterTimeout);
     const elements = container.querySelectorAll('.doc-header, .doc-block, .leader-card, .doc-text > p, .doc-text > h5, .doc-text > ul, .danger-box, .radar-block');
@@ -193,7 +238,13 @@ function runTabTypewriter(container) {
     });
     let currentIdx = 0;
     function typeNextBlock() {
-        if (currentIdx >= elements.length) return;
+        if (currentIdx >= elements.length) {
+            // Если дошли до конца и открыта вкладка операций — запускаем радар
+            if (currentSelectedTab === "operations" && isLevel2Unlocked) {
+                startRadarSimulation();
+            }
+            return;
+        }
         const el = elements[currentIdx];
         if (el.tagName === 'UL' || el.classList.contains('radar-block')) { 
             el.style.display = 'block'; 
@@ -225,7 +276,7 @@ function runTabTypewriter(container) {
     typeNextBlock();
 }
 
-// --- 4. АУТЕНТИФИКАЦИЯ И СКАНИРОВАНИЕ (ПРЯМАЯ ПРОВЕРКА ТЕКСТА) ---
+// --- 5. АУТЕНТИФИКАЦИЯ И СКАНИРОВАНИЕ (ПРЯМАЯ ПРОВЕРКА СТРОК) ---
 function checkMainPassword() {
     initAudio();
     if (checkLockdownStatus()) return;
@@ -239,7 +290,6 @@ function checkMainPassword() {
         scanContainer.style.display = 'none';
         loginBtn.style.display = 'block';
 
-        // Прямая сверка строк без использования асинхронных хэшей
         if (passwordInput.value === GENERAL_PASSWORD) {
             playSoundSuccess();
             authScreen.style.display = 'none';
@@ -265,6 +315,7 @@ function startLoadingAnimation() {
             loadingScreen.style.display = 'none'; 
             mainContent.style.display = 'flex';
             welcomeUsernameSlot.innerText = currentUsername;
+            initSystemVersion(); // Отрисовываем версию в баре
             renderActiveTab("history"); 
         } else {
             progress += Math.floor(Math.random() * 15) + 5; 
@@ -276,17 +327,22 @@ function startLoadingAnimation() {
     }, 60);
 }
 
-// --- 5. СИСТЕМА ДОСТУПА ПО ВКЛАДКАМ ---
+// --- 6. СИСТЕМА ДОСТУПА ПО ВКЛАДКАМ ---
 function renderActiveTab(tabName) {
     [btnTabHistory, btnTabReglement, btnTabOperations].forEach(b => b.classList.remove('active'));
     [contentHistory, contentReglement, contentOperations, tabLockScreen].forEach(c => c.style.display = 'none');
     document.body.classList.remove('theme-blue', 'theme-red', 'theme-green'); 
     stopMatrix();
+    stopRadarSimulation(); // Сбрасываем радар при уходе со вкладки
+
+    // Обновляем цвет тега версии под текущую тему
+    const versionTag = document.getElementById('terminal-version-tag');
 
     if (tabName === "history") {
         btnTabHistory.classList.add('active'); 
         document.body.classList.add('theme-blue'); 
         contentHistory.style.display = 'block';
+        if (versionTag) versionTag.style.color = 'var(--primary-blue)';
         runTabTypewriter(contentHistory);
     } 
     else if (tabName === "reglement") {
@@ -294,6 +350,7 @@ function renderActiveTab(tabName) {
         if (isLevel2Unlocked) {
             document.body.classList.add('theme-red'); 
             contentReglement.style.display = 'block'; 
+            if (versionTag) versionTag.style.color = 'var(--primary-red)';
             runTabTypewriter(contentReglement);
         } else {
             document.body.classList.add('theme-blue'); 
@@ -305,8 +362,9 @@ function renderActiveTab(tabName) {
         if (isLevel2Unlocked) {
             document.body.classList.add('theme-green'); 
             contentOperations.style.display = 'block';
+            if (versionTag) versionTag.style.color = 'var(--primary-green)';
             startMatrix(); 
-            runTabTypewriter(contentOperations);
+            runTabTypewriter(contentOperations); // Запустит и радар в конце печати
         } else {
             document.body.classList.add('theme-blue'); 
             tabLockScreen.style.display = 'flex';
@@ -322,11 +380,9 @@ function renderActiveTab(tabName) {
     });
 });
 
-// ПРЯМАЯ ПРОВЕРКА ВТОРОГО УРОВНЯ ДОСТУПА
 function checkLevel2Password() {
     if (checkLockdownStatus()) return;
     
-    // Прямая сверка строк для TFB-доступа
     if (level2Password.value === BERSERK_PASSWORD) {
         playSoundSuccess();
         isLevel2Unlocked = true; 
@@ -341,7 +397,7 @@ function checkLevel2Password() {
     }
 }
 
-// --- 6. БЕЗОПАСНЫЙ ГЕНЕРАТОР ЦЕНЗУРЫ (DOM-based) ---
+// --- 7. БЕЗОПАСНЫЙ ГЕНЕРАТОР ЦЕНЗУРЫ (DOM-based) ---
 function redactedTextGenerator(htmlContent) {
     let tempDiv = document.createElement('div'); 
     tempDiv.innerHTML = htmlContent;
@@ -400,7 +456,7 @@ function openRedactedDoc() {
 document.querySelectorAll('.export-btn').forEach(btn => btn.addEventListener('click', openRedactedDoc));
 closeExportBtn.addEventListener('click', () => { playSoundClick(); exportOverlay.style.display = 'none'; });
 
-// --- 7. ТАКТИЧЕСКИЕ АНОМАЛИИ И СИГНАЛЫ ЭФИРА ---
+// --- 8. ТАКТИЧЕСКИЕ АНОМАЛИИ И СИГНАЛЫ ЭФИРА ---
 const toastContainer = document.getElementById('tactical-toast');
 const toastBody = document.getElementById('toast-body');
 const anomalyBlip = document.getElementById('anomaly-blip');
@@ -416,13 +472,11 @@ setInterval(() => {
     if (mainContent.style.display === 'flex') {
         let dice = Math.random();
 
-        // 1. Искажения терминала (Глитч)
         if (dice < 0.25) {
             document.body.classList.add('ambient-glitch');
             playSoundGlitch();
             setTimeout(() => document.body.classList.remove('ambient-glitch'), 120);
         } 
-        // 2. Всплывающее тактическое сообщение САЭ
         else if (dice < 0.55) {
             let randomText = notificationTexts[Math.floor(Math.random() * notificationTexts.length)];
             toastBody.innerText = randomText;
@@ -430,7 +484,6 @@ setInterval(() => {
             playSoundGlitch();
             setTimeout(() => { toastContainer.style.display = 'none'; }, 4000);
         } 
-        // 3. Аномалия радара в секторе операций
         else if (dice < 0.85 && currentSelectedTab === "operations") {
             if (anomalyBlip) {
                 anomalyBlip.style.display = 'block';
@@ -453,6 +506,7 @@ document.getElementById('logout-btn').addEventListener('click', () => {
     document.body.classList.remove('theme-red', 'theme-green', 'theme-blue'); 
     document.body.classList.add('theme-blue');
     stopMatrix(); 
+    stopRadarSimulation();
     exportOverlay.style.display = 'none';
 });
 
