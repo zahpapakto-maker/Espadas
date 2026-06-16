@@ -410,3 +410,24 @@ body {
 #logout-btn:hover { border-color: var(--primary-red); color: var(--primary-red); }
 
 @keyframes text-flash { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+/* ЭФФЕКТ ОБЩЕГО ГЛИТЧА ТЕРМИНАЛА */
+body.ambient-glitch {
+    animation: terminal-flash 0.12s steps(2) infinite;
+    overflow: hidden;
+}
+
+@keyframes terminal-flash {
+    0% { filter: contrast(1.5) brightness(1.2) hue-rotate(45deg); opacity: 0.9; }
+    50% { filter: contrast(0.8) brightness(0.9) skewX(2deg); opacity: 1; }
+    100% { filter: none; }
+}
+
+/* Блокировка кнопки входа во время сканирования сетчатки */
+#login-btn:disabled {
+    border-color: #1a3a63 !important;
+    color: #4f7396 !important;
+    cursor: not-allowed !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
