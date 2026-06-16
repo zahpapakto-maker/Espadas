@@ -1,433 +1,648 @@
-:root {
-    --primary-blue: #00a2ff;
-    --border-blue: #1a3a63;
-    --bg-card-blue: #051124;
-    
-    --primary-red: #ff3344;
-    --border-red: #4a1515;
-    --bg-card-red: #160709;
-    
-    --primary-green: #00ff66;
-    --border-green: #0f3d1e;
-    --bg-card-green: #05140b;
-}
-
+/* ============================================================================
+   --- 1. СБРОС БАЗОВЫХ СТИЛЕЙ, ИНИЦИАЛИЗАЦИЯ И ШРИФТЫ ---
+   ============================================================================ */
 * {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
+    font-family: 'Courier New', Courier, monospace;
 }
 
-/* ЭФФЕКТ ЭЛТ МОНИТОРА (Глобальный) */
+body {
+    background-color: #020804;
+    height: 100vh;
+    overflow: hidden;
+    color: #00a2ff; /* Стандартный холодный неоново-синий цвет по умолчанию */
+    transition: color 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
+/* ============================================================================
+   --- 2. КИНЕМАТОГРАФИЧНЫЙ ЭФФЕКТ ЭЛТ-МОНИТОРА (CRT SCANLINES) ---
+   ============================================================================ */
 .crt-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-    background-size: 100% 3px, 3px 100%;
-    z-index: 99999;
-    pointer-events: none;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    background-size: 100% 4px, 6px 100%;
+    pointer-events: none; /* Пропускает клики сквозь себя */
+    z-index: 9999;
+    opacity: 0.85;
     animation: crt-flicker 0.15s infinite;
 }
 
-@keyframes crt-flicker { 0% { opacity: 0.98; } 50% { opacity: 1; } 100% { opacity: 0.99; } }
-
-/* МАТРИЧНЫЙ ХОЛСТ */
-#matrix-canvas {
+/* Затемнение краев экрана (эффект выпуклого кинескопа) */
+body::after {
+    content: " ";
+    display: block;
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: -1;
-    display: none;
-    opacity: 0.25;
+    top: 0; 
+    left: 0; 
+    bottom: 0; 
+    right: 0;
+    background: radial-gradient(circle, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 0.75) 100%);
+    pointer-events: none;
+    z-index: 9998;
 }
 
-/* ГЛОБАЛЬНЫЕ СМЕНЫ ФОНОВ */
-body.theme-blue {
-    background: #030812 !important;
-    --current-color: var(--primary-blue);
-    --current-border: var(--border-blue);
-    --current-card: var(--bg-card-blue);
+@keyframes crt-flicker {
+    0% { opacity: 0.84; }
+    50% { opacity: 0.87; }
+    100% { opacity: 0.85; }
 }
 
-body.theme-red {
-    background: #0d0203 !important;
-    --current-color: var(--primary-red);
-    --current-border: var(--border-red);
-    --current-card: var(--bg-card-red);
-}
-
-body.theme-green {
-    background: #020804 !important;
-    --current-color: var(--primary-green);
-    --current-border: var(--border-green);
-    --current-card: var(--bg-card-green);
-}
-
-body {
-    color: #c4d1e6;
-    font-family: Arial, sans-serif;
-    line-height: 1.6;
-    overflow-x: hidden;
-    transition: background 0.3s ease;
-}
-
-/* БИОМЕТРИЧЕСКИЙ СКАНЕР */
-.biometric-scanner {
-    margin: 25px 0;
-    border: 1px solid #1a3a63;
-    padding: 15px;
-    background: rgba(0, 0, 0, 0.2);
-    text-align: center;
-}
-
-.scan-frame {
-    position: relative;
-    width: 100px;
-    height: 100px;
-    margin: 0 auto 10px auto;
-    border: 1px solid rgba(0, 162, 255, 0.3);
-    overflow: hidden;
-    background: radial-gradient(circle, #051124 10%, #000 100%);
-}
-
-.laser-line {
-    position: absolute;
-    width: 100%;
-    height: 2px;
-    background: #00a2ff;
-    box-shadow: 0 0 10px #00a2ff;
-    top: 0;
-    animation: laser-scan 1.5s ease-in-out infinite;
-}
-
-.eye-graphic {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 60px;
-    height: 30px;
-    border: 3px solid rgba(0, 162, 255, 0.2);
-    border-radius: 50%;
-}
-
-.eye-graphic::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 20px;
-    height: 20px;
-    border: 2px solid rgba(0, 162, 255, 0.2);
-    border-radius: 50%;
-    background: rgba(0, 162, 255, 0.05);
-}
-
-.scan-msg {
-    color: #00a2ff;
-    font-size: 0.8rem;
-    font-weight: bold;
-    animation: text-flash 0.5s infinite;
-}
-
-@keyframes laser-scan {
-    0% { top: -2%; }
-    50% { top: 100%; }
-    100% { top: -2%; }
-}
-
-/* ОКНО ЭКСПОРТА (CENSORED DOCS) */
-.redacted-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.85);
-    z-index: 100000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-}
-
-.redacted-paper {
-    position: relative;
-    max-width: 650px;
-    width: 100%;
-    max-height: 90vh;
-    background: #101010;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #a0a0a0;
-    padding: 60px 50px;
-    font-family: Courier, monospace;
-    font-size: 1rem;
-    overflow-y: auto;
-    box-shadow: 0 0 40px rgba(0, 0, 0, 0.7);
-}
-
-.stamp {
-    position: absolute;
-    top: 30px;
-    right: 30px;
-    border: 4px solid #ff3344;
-    color: #ff3344;
-    padding: 5px 15px;
-    font-weight: bold;
-    transform: rotate(15deg);
-    font-size: 1.2rem;
-    background: transparent;
-    text-shadow: none;
-}
-
-.stamp-round {
-    position: absolute;
-    bottom: 50px;
-    left: 40px;
-    border: 3px solid rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.1);
-    border-radius: 50%;
-    width: 100px;
-    height: 100px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-weight: bold;
-    transform: rotate(-10deg);
-    font-size: 0.9rem;
-    text-transform: uppercase;
-}
-
-#close-export {
-    position: absolute;
-    top: 15px;
-    left: 15px;
-    background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: #8fa7c7;
-    cursor: pointer;
-    font-size: 0.8rem;
-    padding: 4px 10px;
-}
-
-#close-export:hover {
-    border-color: #ff3344;
-    color: #ff3344;
-}
-
-.censored-block {
-    background: #000;
-    color: transparent !important;
-    transition: all 0.2s;
-    text-shadow: none;
-    cursor: pointer;
-}
-
-.censored-block::selection {
-    background: transparent;
-}
-
-.export-btn {
-    display: inline-block;
-    background: transparent;
-    border: 1px solid var(--current-color);
-    color: var(--current-color);
-    padding: 6px 15px;
-    cursor: pointer;
-    margin-top: 20px;
-    font-weight: bold;
-    transition: 0.2s;
-    font-size: 0.85rem;
-}
-
-.export-btn:hover {
-    background: var(--current-color);
-    color: #000;
-    box-shadow: 0 0 10px var(--current-color);
-}
-
-/* ТАКТИЧЕСКИЙ РАДАР */
-.radar-block {
-    background: transparent !important;
-    border: 1px solid var(--border-green) !important;
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.radar-block h5 {
-    color: var(--primary-green) !important;
-    margin-bottom: 10px !important;
-    font-size: 0.9rem !important;
-}
-
-#radar-container {
-    max-width: 250px;
-    margin: 0 auto;
-    position: relative;
-}
-
-.tactical-radar {
-    fill: none;
-    stroke: var(--primary-green);
-    stroke-width: 0.5;
-    opacity: 0.6;
-}
-
-.radar-bg {
-    fill: #010603;
-    stroke: none;
-}
-
-.radar-grid {
-    stroke-dasharray: 2 2;
-    opacity: 0.4;
-}
-
-.radar-line-x, .radar-line-y {
-    opacity: 0.4;
-}
-
-.radar-sweep {
-    fill: rgba(0, 255, 102, 0.03);
-    stroke: none;
-    transform-origin: 50px 50px;
-    animation: radar-sweep-rotate 3s linear infinite;
-}
-
-.tactical-blip {
-    fill: var(--primary-green);
-    stroke: none;
-    animation: blip-pulse 1.5s ease infinite;
-    opacity: 0;
-}
-
-.blip-1 { animation-delay: 0.2s; }
-.blip-2 { animation-delay: 0.8s; }
-.blip-3 { animation-delay: 1.2s; }
-
-@keyframes radar-sweep-rotate {
-    to { transform: rotate(360deg); }
-}
-
-@keyframes blip-pulse {
-    0% { opacity: 0; transform: scale(1); }
-    20% { opacity: 1; transform: scale(1.1); }
-    60% { opacity: 0; transform: scale(1.3); }
-    100% { opacity: 0; }
-}
-
-/* ГЛИТЧ ПРИ ОШИБКЕ */
-.glitch-error {
-    animation: glitch-shake 0.4s linear;
-    border-color: var(--primary-red) !important;
-    box-shadow: 0 0 40px rgba(255, 51, 68, 0.4) !important;
-}
-
-@keyframes glitch-shake {
-    0% { transform: translate(0, 0) skewX(0deg); filter: hue-rotate(0deg); }
-    10% { transform: translate(-6px, 3px) skewX(-5deg); }
-    20% { transform: translate(6px, -2px) skewX(10deg); filter: hue-rotate(90deg); }
-    30% { transform: translate(-3px, -3px) skewX(-12deg); }
-    40% { transform: translate(4px, 4px) skewX(0deg); filter: hue-rotate(180deg); }
-    50% { transform: translate(-5px, 1px) skewX(5deg); }
-    60% { transform: translate(5px, -4px) skewX(-5deg); filter: hue-rotate(270deg); }
-    70% { transform: translate(-2px, 3px) skewX(0deg); }
-    80% { transform: translate(3px, -1px) skewX(2deg); }
-    100% { transform: translate(0, 0) skewX(0deg); filter: hue-rotate(360deg); }
-}
-
-/* ЭКРАНЫ */
-.terminal-screen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: #02060d;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-    padding: 20px;
-}
-
-.auth-box, .loading-box {
-    max-width: 450px;
-    width: 100%;
-    border: 1px solid var(--border-blue);
-    background: var(--bg-card-blue);
-    padding: 40px;
-    text-align: center;
-    box-shadow: 0 0 30px rgba(0, 110, 255, 0.15);
-    transition: all 0.3s ease;
-}
-
-.terminal-logo { max-width: 140px; height: auto; margin-bottom: 25px; }
-.status-msg { color: var(--primary-blue); margin-bottom: 25px; font-weight: bold; letter-spacing: 1px; }
-.error-text { color: var(--primary-red); font-size: 0.9rem; margin-bottom: 20px; font-weight: bold; }
-.input-group { text-align: left; margin-bottom: 20px; }
-.input-group label { display: block; font-size: 0.75rem; color: #4f7396; margin-bottom: 6px; font-weight: bold; }
-.input-group input { width: 100%; padding: 12px; background: #020914; border: 1px solid var(--border-blue); color: #e0e9f5; font-family: monospace; outline: none; }
-#login-btn { width: 100%; padding: 15px; background: transparent; border: 1px solid var(--primary-blue); color: var(--primary-blue); font-weight: bold; cursor: pointer; }
-#login-btn:hover { background: var(--primary-blue); color: #030812; }
-.progress-bar { width: 100%; height: 4px; background: #0a1f3d; margin: 20px 0 10px 0; }
-.progress-fill { width: 0%; height: 100%; background: var(--primary-blue); }
-.percent { color: var(--primary-blue); font-family: monospace; }
-
-/* АРХИВ */
-.archive-container { max-width: 850px; margin: 0 auto; padding: 40px 20px; min-height: 100vh; display: flex; flex-direction: column; }
-#welcome-bar { text-align: right; margin-bottom: 20px; border-bottom: 1px solid rgba(0, 162, 255, 0.1); padding-bottom: 5px; }
-#welcome-bar h6 { color: var(--current-color); font-size: 0.85rem; text-transform: uppercase; }
-#welcome-username { font-weight: bold; text-shadow: 0 0 5px var(--current-color); }
-.tabs-navigation { border-bottom: 1px solid var(--current-border); margin-bottom: 35px; display: flex; flex-wrap: wrap; gap: 5px; }
-.tab-button { background: #051124; border: 1px solid var(--border-blue); border-bottom: none; color: #5c7fa3; padding: 14px 24px; font-size: 0.85rem; cursor: pointer; font-weight: bold; transition: all 0.2s ease; }
-.tab-button.active { background: var(--current-card) !important; color: var(--current-color) !important; border-color: var(--current-color) !important; }
-
-/* ДЕТАЛИ ДОКУМЕНТОВ */
-.doc-header { display: flex; align-items: center; margin-bottom: 30px; }
-.decor-line { width: 4px; height: 26px; background: var(--current-color); margin-right: 12px; }
-.doc-header h3 { font-size: 1.4rem; color: var(--current-color); }
-.doc-title-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--current-border); padding-bottom: 15px; margin-bottom: 15px; }
-.doc-block h4 { font-size: 1.4rem; color: #ffffff; }
-.clearance-badge { background: #4a1515; color: #ff4a4a; border: 1px solid #822020; padding: 4px 10px; font-size: 0.75rem; font-weight: bold; }
-.meta-grid { background: var(--current-card); border-left: 3px solid var(--current-color); padding: 12px 20px; margin-bottom: 30px; font-size: 0.9rem; }
-.doc-text h5 { font-size: 1.1rem; color: var(--current-color); margin: 35px 0 15px 0; text-transform: uppercase; }
-.doc-text p { font-size: 1.05rem; margin-bottom: 20px; color: #b0c2de; }
-.styled-list li { position: relative; padding-left: 20px; margin-bottom: 12px; font-size: 1.05rem; color: #b0c2de; }
-.styled-list li::before { content: "■"; position: absolute; left: 0; color: var(--current-color); top: 2px; }
-.danger-box { background: #1c1111; border: 1px solid #4a2121; border-left: 4px solid var(--primary-red); padding: 20px; margin: 30px 0; color: #e6baba; }
-.leader-card { background: var(--current-card); border: 1px solid var(--current-border); padding: 20px; margin-bottom: 15px; display: flex; gap: 20px; }
-.tab-lock-container { width: 100%; padding: 60px 20px; }
-.lock-prompt-box { max-width: 500px; width: 100%; margin: 0 auto; background: #051124; border: 1px solid #1e3a61; padding: 35px; text-align: center; }
-.archive-footer { margin-top: auto; padding: 50px 0 20px 0; text-align: center; }
-#logout-btn { background: transparent; border: 1px solid #16355c; color: #5c7fa3; padding: 12px 35px; }
-#logout-btn:hover { border-color: var(--primary-red); color: var(--primary-red); }
-
-@keyframes text-flash { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-
-/* ЭФФЕКТ ОБЩЕГО ГЛИТЧА ТЕРМИНАЛА */
+/* Эффект мерцания интерфейса при аномалиях эфира */
 body.ambient-glitch {
     animation: terminal-flash 0.12s steps(2) infinite;
     overflow: hidden;
 }
 
 @keyframes terminal-flash {
-    0% { filter: contrast(1.5) brightness(1.2) hue-rotate(45deg); opacity: 0.9; }
-    50% { filter: contrast(0.8) brightness(0.9) skewX(2deg); opacity: 1; }
+    0% { filter: contrast(1.4) brightness(1.2) hue-rotate(30deg); opacity: 0.9; }
+    50% { filter: contrast(0.8) brightness(0.9) skewX(1deg); opacity: 1; }
     100% { filter: none; }
 }
 
-/* Блокировка кнопки входа во время сканирования сетчатки */
-#login-btn:disabled {
-    border-color: #1a3a63 !important;
-    color: #4f7396 !important;
-    cursor: not-allowed !important;
-    background: transparent !important;
-    box-shadow: none !important;
+/* ============================================================================
+   --- 3. ДИНАМИЧЕСКИЕ СИСТЕМНЫЕ ЦВЕТОВЫЕ ТЕМЫ EDC ---
+   ============================================================================ */
+/* ТЕМА УРОВНЯ 01: ОБЩИЙ ДОСТУП (ХОЛОДНЫЙ СИНИЙ) */
+body.theme-blue {
+    color: #00a2ff;
+}
+body.theme-blue .glow-btn { border-color: #00a2ff; color: #00a2ff; box-shadow: 0 0 8px rgba(0, 162, 255, 0.2); }
+body.theme-blue .glow-btn:hover { background: #00a2ff; color: #000; box-shadow: 0 0 15px #00a2ff; }
+body.theme-blue .auth-box, body.theme-blue .doc-header { border-color: #00a2ff; }
+body.theme-blue .menu-item.active { background: rgba(0, 162, 255, 0.15); border-left: 4px solid #00a2ff; }
+
+/* ТЕМА УРОВНЯ 02: РЕГЛАМЕНТ САЭ (ТРЕВОЖНЫЙ КРАСНЫЙ) */
+body.theme-red {
+    color: #ff3344;
+}
+body.theme-red .glow-btn { border-color: #ff3344; color: #ff3344; box-shadow: 0 0 8px rgba(255, 51, 68, 0.2); }
+body.theme-red .glow-btn:hover { background: #ff3344; color: #000; box-shadow: 0 0 15px #ff3344; }
+body.theme-red .auth-box, body.theme-red .doc-header { border-color: #ff3344; }
+body.theme-red .menu-item.active { background: rgba(255, 51, 68, 0.15); border-left: 4px solid #ff3344; color: #ff3344; }
+
+/* ТЕМА УРОВНЯ 02: ОПЕРАЦИИ TFB (ТАКТИЧЕСКИЙ ЗЕЛЕНЫЙ) */
+body.theme-green {
+    color: #00ff66;
+}
+body.theme-green .glow-btn { border-color: #00ff66; color: #00ff66; box-shadow: 0 0 8px rgba(0, 255, 102, 0.2); }
+body.theme-green .glow-btn:hover { background: #00ff66; color: #000; box-shadow: 0 0 15px #00ff66; }
+body.theme-green .auth-box, body.theme-green .doc-header { border-color: #00ff66; }
+body.theme-green .menu-item.active { background: rgba(0, 255, 102, 0.15); border-left: 4px solid #00ff66; color: #00ff66; }
+
+/* ============================================================================
+   --- 4. МАТРИЧНЫЙ ХОЛСТ (ФОН АНОМАЛИЙ) ---
+   ============================================================================ */
+#matrix-canvas {
+    position: fixed;
+    top: 0; 
+    left: 0;
+    width: 100vw; 
+    height: 100vh;
+    z-index: 0;
+    opacity: 0.12;
+    display: none;
+    pointer-events: none;
+}
+
+/* ============================================================================
+   --- 5. ВЕРХНИЙ ЖИВОЙ СТАТУС-БАР ТЕРМИНАЛА ---
+   ============================================================================ */
+#live-status-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 26px;
+    background: rgba(2, 8, 4, 0.95);
+    border-bottom: 1px solid currentColor;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    font-size: 11px;
+    letter-spacing: 1px;
+    z-index: 500;
+}
+.bar-segment { flex: 1; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+
+/* ============================================================================
+   --- 6. ПОЛНОЭКРАННЫЕ КОНТЕЙНЕРЫ И ФОРМЫ АВТОРИЗАЦИИ ---
+   ============================================================================ */
+.full-screen-center {
+    width: 100vw; 
+    height: 100vh;
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+    position: relative; 
+    z-index: 10;
+    background: radial-gradient(circle, rgba(2, 8, 4, 0.4) 0%, rgba(0, 0, 0, 0.9) 100%);
+}
+
+.auth-box, .loading-box, .lockdown-box {
+    width: 420px; 
+    background: rgba(3, 12, 5, 0.95);
+    border: 1px solid currentColor; 
+    padding: 20px;
+    box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.6);
+}
+
+.terminal-header {
+    display: flex; 
+    align-items: center; 
+    margin-bottom: 20px;
+    border-bottom: 1px dashed currentColor; 
+    padding-bottom: 8px;
+}
+
+.status-dot {
+    width: 8px; 
+    height: 8px; 
+    border-radius: 50%; 
+    margin-right: 10px;
+    box-shadow: 0 0 8px currentColor;
+}
+.status-dot.green { background-color: #00ff66; }
+.status-dot.red { background-color: #ff3344; }
+
+.input-group { 
+    margin-bottom: 15px; 
+}
+.input-group label { 
+    display: block; 
+    font-size: 11px; 
+    margin-bottom: 6px; 
+    letter-spacing: 1px; 
+}
+
+input {
+    width: 100%; 
+    background: rgba(0, 0, 0, 0.6); 
+    border: 1px solid currentColor;
+    padding: 8px; 
+    color: inherit; 
+    font-size: 14px; 
+    outline: none;
+}
+input:focus { 
+    box-shadow: 0 0 10px rgba(2, 2, 2, 0.5); 
+}
+
+.glow-btn {
+    width: 100%; 
+    padding: 10px; 
+    background: transparent; 
+    border: 1px solid currentColor;
+    font-size: 12px; 
+    font-weight: bold; 
+    cursor: pointer; 
+    letter-spacing: 1px; 
+    transition: 0.2s;
+}
+
+/* ============================================================================
+   --- 7. АНИМАЦИОННЫЙ БИОМЕТРИЧЕСКИЙ СКАНЕР ---
+   ============================================================================ */
+#scan-container { 
+    margin-top: 15px; 
+    position: relative; 
+    border: 1px solid rgba(255, 255, 255, 0.1); 
+    padding: 10px; 
+    background: rgba(0, 0, 0, 0.5); 
+    overflow: hidden;
+}
+.scan-bar { 
+    width: 100%; 
+    height: 2px; 
+    background: #00ff66; 
+    box-shadow: 0 0 8px #00ff66; 
+    position: absolute; 
+    left: 0; 
+    top: 0; 
+    animation: scan-move 1.2s ease-in-out infinite; 
+}
+.scan-text { 
+    font-size: 10px; 
+    text-align: center; 
+    color: #00ff66; 
+    margin-top: 4px; 
+}
+@keyframes scan-move { 
+    0% { top: 0%; } 
+    50% { top: 100%; } 
+    100% { top: 0%; } 
+}
+
+.error-banner { 
+    border: 1px solid #ff3344; 
+    background: rgba(255, 51, 68, 0.15); 
+    color: #ff3344; 
+    padding: 10px; 
+    text-align: center; 
+    font-size: 11px; 
+    margin-top: 15px; 
+    font-weight: bold; 
+}
+
+/* ============================================================================
+   --- 8. ПАНЕЛИ ЗАГРУЗКИ И АВТОМАТИЧЕСКОГО ЛОКДАУНА ---
+   ============================================================================ */
+.progress-bar { 
+    width: 100%; 
+    height: 12px; 
+    border: 1px solid currentColor; 
+    margin: 15px 0; 
+    padding: 1px; 
+}
+.progress-fill { 
+    width: 0%; 
+    height: 100%; 
+    background: currentColor; 
+    transition: width 0.05s ease-out; 
+}
+.loading-footer { 
+    display: flex; 
+    justify-content: space-between; 
+    font-size: 12px; 
+}
+.blink-text { 
+    animation: blink 1s steps(2) infinite; 
+}
+@keyframes blink { 
+    to { visibility: hidden; } 
+}
+
+.lockdown-box { 
+    border-color: #ff3344; 
+    color: #ff3344; 
+    text-align: center; 
+    width: 500px; 
+}
+#lockdown-timer { 
+    font-size: 48px; 
+    font-weight: bold; 
+    margin-top: 15px; 
+    letter-spacing: 2px; 
+}
+
+/* ============================================================================
+   --- 9. СТРУКТУРНАЯ СЕТКА ИНТЕРФЕЙСА (SIDEBAR & VIEW) ---
+   ============================================================================ */
+#main-content {
+    display: flex; 
+    width: 100vw; 
+    height: 100vh; 
+    padding-top: 26px; /* Зазор под фиксированный статус-бар */
+    position: relative; 
+    z-index: 10;
+}
+
+.sidebar {
+    width: 280px; 
+    border-right: 1px solid currentColor;
+    background: rgba(2, 8, 4, 0.85); 
+    padding: 20px;
+    display: flex; 
+    flex-direction: column; 
+    justify-content: space-between;
+}
+.sidebar-brand h4 { font-size: 16px; letter-spacing: 1px; margin-bottom: 4px; }
+.sidebar-brand p { font-size: 10px; opacity: 0.6; }
+.sidebar-menu { margin-top: 30px; display: flex; flex-direction: column; gap: 10px; flex-grow: 1; }
+
+.menu-item {
+    width: 100%; 
+    padding: 12px; 
+    background: transparent; 
+    border: none;
+    color: inherit; 
+    text-align: left; 
+    font-size: 12px; 
+    cursor: pointer;
+    border-left: 4px solid transparent; 
+    transition: 0.2s;
+}
+.menu-item:hover { 
+    background: rgba(255, 255, 255, 0.03); 
+}
+
+.sidebar-footer { 
+    font-size: 11px; 
+    border-top: 1px dashed currentColor; 
+    padding-top: 15px; 
+}
+.logout-btn { 
+    background: transparent; 
+    border: 1px solid #ff3344; 
+    color: #ff3344; 
+    padding: 6px; 
+    width: 100%; 
+    font-size: 11px; 
+    cursor: pointer; 
+    margin-top: 10px; 
+}
+.logout-btn:hover { 
+    background: #ff3344; 
+    color: #000; 
+}
+
+/* РАБОЧАЯ ОБЛАСТЬ ПРОСМОТРА ДОКУМЕНТОВ */
+.content-viewer { 
+    flex-grow: 1; 
+    padding: 30px; 
+    overflow-y: auto; 
+    background: rgba(0, 0, 0, 0.2); 
+    position: relative; 
+}
+.tab-content { 
+    width: 100%; 
+    max-width: 900px; 
+}
+.doc-header { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    border: 1px solid currentColor; 
+    padding: 10px; 
+    font-size: 11px; 
+    margin-bottom: 25px; 
+    background: rgba(0, 0, 0, 0.4); 
+}
+.export-btn { 
+    background: transparent; 
+    border: 1px solid currentColor; 
+    color: inherit; 
+    padding: 4px 10px; 
+    font-size: 11px; 
+    cursor: pointer; 
+}
+.export-btn:hover { 
+    background: currentColor; 
+    color: #000; 
+}
+
+.doc-title-row { 
+    border-bottom: 2px solid currentColor; 
+    padding-bottom: 10px; 
+    margin-bottom: 20px; 
+}
+.doc-text p { 
+    font-size: 14px; 
+    line-height: 1.6; 
+    margin-bottom: 15px; 
+    text-align: justify; 
+}
+.doc-text h5 { 
+    font-size: 14px; 
+    margin: 25px 0 12px 0; 
+    letter-spacing: 1px; 
+    text-transform: uppercase; 
+}
+.doc-text ul { 
+    margin-left: 20px; 
+    margin-bottom: 20px; 
+}
+.doc-text li { 
+    font-size: 14px; 
+    line-height: 1.6; 
+    margin-bottom: 6px; 
+}
+
+/* ============================================================================
+   --- 10. КАРТОЧКИ ШТАБА И ТАКТИЧЕСКИЕ БЛОКИ ДАННЫХ ---
+   ============================================================================ */
+.leader-cards-grid { 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 15px; 
+    margin: 15px 0; 
+}
+.leader-card { 
+    border: 1px dashed currentColor; 
+    padding: 15px; 
+    background: rgba(0, 0, 0, 0.3); 
+}
+.leader-card h6 { 
+    font-size: 13px; 
+    margin-bottom: 4px; 
+}
+.card-role { 
+    font-size: 11px; 
+    opacity: 0.8; 
+    margin-bottom: 8px; 
+    font-weight: bold; 
+}
+.italic-note { 
+    font-size: 12px; 
+    font-style: italic; 
+    opacity: 0.7; 
+}
+
+.danger-box { 
+    border: 1px solid #ff3344; 
+    background: rgba(255, 51, 68, 0.06); 
+    padding: 15px; 
+    margin: 20px 0; 
+    color: #ff3344; 
+}
+.meta-grid { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 10px; 
+    margin-top: 15px; 
+}
+.meta-item { 
+    border-left: 3px solid currentColor; 
+    padding-left: 10px; 
+    font-size: 13px; 
+}
+
+/* Раздел требования Level 2 на вкладках */
+.lock-notice {
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 20px;
+    opacity: 0.9;
+}
+
+/* ============================================================================
+   --- 11. ТАКТИЧЕСКИЙ СЕКТОРНЫЙ РАДАР (ВКЛАДКА ОПЕРАЦИЙ) ---
+   ============================================================================ */
+.radar-block { 
+    border: 1px solid #00ff66; 
+    background: rgba(0, 0, 0, 0.6); 
+    padding: 15px; 
+    margin: 20px 0; 
+    width: 100%; 
+    max-width: 400px; 
+}
+.radar-header { 
+    font-size: 11px; 
+    text-align: center; 
+    margin-bottom: 10px; 
+    letter-spacing: 1px; 
+}
+.radar-display { 
+    width: 100%; 
+    height: 200px; 
+    border: 1px solid rgba(0, 255, 102, 0.3); 
+    border-radius: 50%; 
+    position: relative; 
+    overflow: hidden; 
+    background: radial-gradient(circle, rgba(0, 255, 102, 0.05) 0%, transparent 70%); 
+    margin: 0 auto; 
+}
+.radar-sweep { 
+    position: absolute; 
+    width: 50%; 
+    height: 50%; 
+    background: linear-gradient(45deg, rgba(0, 255, 102, 0.3) 0%, transparent 100%); 
+    transform-origin: bottom right; 
+    top: 0; 
+    left: 0; 
+    animation: radar-spin 4s linear infinite; 
+}
+.radar-target { 
+    width: 6px; 
+    height: 6px; 
+    background: #ff3344; 
+    border-radius: 50%; 
+    position: absolute; 
+    top: 40%; 
+    left: 65%; 
+    box-shadow: 0 0 10px #ff3344; 
+    animation: target-blink 1s ease infinite; 
+}
+
+@keyframes radar-spin { 
+    from { transform: rotate(0deg); } 
+    to { transform: rotate(360deg); } 
+}
+@keyframes target-blink { 
+    0%, 100% { opacity: 0.2; } 
+    50% { opacity: 1; } 
+}
+
+/* ============================================================================
+   --- 12. ГЛИТЧ-ОШИБКИ, ТОСТЫ И МОДАЛЬНЫЕ ОКНА ЦЕНЗУРЫ ---
+   ============================================================================ */
+/* Тряска бокса при неверном коде доступа */
+.glitch-error { 
+    animation: shake-box 0.35s ease; 
+    border-color: #ff3344 !important; 
+    color: #ff3344 !important; 
+}
+@keyframes shake-box { 
+    0%, 100% { transform: translateX(0); } 
+    20%, 60% { transform: translateX(-6px); } 
+    40%, 80% { transform: translateX(6px); } 
+}
+
+/* Всплывающее тактическое уведомление сети */
+.toast-box { 
+    position: fixed; 
+    bottom: 20px; 
+    right: 20px; 
+    width: 320px; 
+    background: rgba(2, 8, 4, 0.95); 
+    border: 1px solid #ff3344; 
+    color: #ff3344; 
+    z-index: 2000; 
+    box-shadow: 0 0 15px rgba(255, 51, 68, 0.2); 
+    animation: toast-in 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28); 
+}
+.toast-header { 
+    background: rgba(255, 51, 68, 0.15); 
+    padding: 8px 12px; 
+    font-size: 11px; 
+    font-weight: bold; 
+    border-bottom: 1px dashed #ff3344; 
+}
+.toast-body { 
+    padding: 12px; 
+    font-size: 12px; 
+    line-height: 1.4; 
+}
+@keyframes toast-in { 
+    from { transform: translateY(50px); opacity: 0; } 
+    to { transform: translateY(0); opacity: 1; } 
+}
+
+/* Оверлей окна экспорта зацензурированного досье */
+.modal-overlay { 
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100vw; 
+    height: 100vh; 
+    background: rgba(0, 0, 0, 0.85); 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    z-index: 1500; 
+    padding: 20px; 
+}
+.export-modal { 
+    width: 100%; 
+    max-width: 850px; 
+    max-height: 90vh; 
+    background: #020804; 
+    border: 1px solid currentColor; 
+    display: flex; 
+    flex-direction: column; 
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.8); 
+}
+.export-header-panel { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    padding: 15px 20px; 
+    border-bottom: 1px solid currentColor; 
+}
+.export-header-panel h3 { 
+    font-size: 14px; 
+    letter-spacing: 1px; 
+}
+.close-btn { 
+    background: transparent; 
+    border: 1px solid #ff3344; 
+    color: #ff3344; 
+    padding: 5px 12px; 
+    cursor: pointer; 
+    font-size: 11px; 
+}
+.close-btn:hover { 
+    background: #ff3344; 
+    color: #000; 
+}
+.export-meta-strip { 
+    display: flex; 
+    justify-content: space-between; 
+    padding: 10px 20px; 
+    background: rgba(255, 255, 255, 0.02); 
+    font-size: 11px; 
+    border-bottom: 1px dashed currentColor; 
+    opacity: 0.8; 
+}
+.export-print-area { 
+    padding: 30px; 
+    overflow-y: auto; 
+    flex-grow: 1; 
+}
+
+/* Эффект закрашенных блоков военной цензуры */
+.censored-block { 
+    background: currentColor; 
+    color: currentColor; 
+    border-radius: 2px; 
+    padding: 0 1px; 
 }
